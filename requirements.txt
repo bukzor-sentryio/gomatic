@@ -2,3 +2,8 @@ requests
 bumpversion
 black
 pre-commit
+flake8
+coverage
+covdefaults
+pytest
+re-assert
