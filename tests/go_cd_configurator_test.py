@@ -14,16 +14,12 @@ from gomatic import GoCdConfigurator
 from gomatic import Pipeline
 from gomatic import PipelineMaterial
 from gomatic import RakeTask
-from gomatic import Security
 from gomatic import Tab
 from gomatic.fake import config
 from gomatic.fake import config_18_3_0
 from gomatic.fake import empty_config
 from gomatic.fake import empty_config_xml
 from gomatic.fake import FakeHostRestClient
-from gomatic.fake import load_file
-from gomatic.gocd.artifact_stores import ArtifactStore
-from gomatic.gocd.artifact_stores import ArtifactStores
 from gomatic.gocd.artifacts import Artifact
 from gomatic.gocd.artifacts import ArtifactFor
 from gomatic.gocd.artifacts import BuildArtifact
@@ -153,7 +149,7 @@ class TestJobs(unittest.TestCase):
         job = stages[0].jobs[0]
         self.assertEqual(False, job.has_timeout)
         try:
-            timeout = job.timeout
+            print(job.timeout)
             self.fail("should have thrown exception")
         except RuntimeError:
             pass
@@ -195,7 +191,7 @@ class TestJobs(unittest.TestCase):
         job = stages[0].jobs[0]
         self.assertEqual(False, job.has_elastic_profile_id)
         try:
-            elastic_profile_id = job.elastic_profile_id
+            print(job.elastic_profile_id)
             self.fail("should have thrown exception")
         except RuntimeError:
             pass
@@ -217,7 +213,7 @@ class TestJobs(unittest.TestCase):
         job = stages[0].jobs[0]
         self.assertEqual(False, job.has_run_instance_count)
         try:
-            run_instance_count = job.run_instance_count
+            print(job.run_instance_count)
             self.fail("should have thrown exception")
         except RuntimeError:
             pass
@@ -808,6 +804,7 @@ class TestStages(unittest.TestCase):
             authorize_users=["user1"], authorize_roles=["role1"]
         )
 
+        self.assertEqual(s, stage)
         self.assertEqual(True, stage.has_manual_approval)
         self.assertEqual(["user1"], stage.authorized_users)
         self.assertEqual(["role1"], stage.authorized_roles)
@@ -1156,7 +1153,7 @@ class TestPipeline(unittest.TestCase):
         )
         self.assertEqual(False, pipeline.has_single_git_material)
         try:
-            url = pipeline.git_url
+            print(pipeline.git_url)
             self.fail("should have thrown exception")
         except RuntimeError:
             pass
@@ -1171,7 +1168,7 @@ class TestPipeline(unittest.TestCase):
         pipeline.ensure_material(GitMaterial("git@bitbucket.org:springersbm/two.git"))
         self.assertEqual(False, pipeline.has_single_git_material)
         try:
-            url = pipeline.git_url
+            print(pipeline.git_url)
             self.fail("should have thrown exception")
         except RuntimeError:
             pass
@@ -1583,7 +1580,7 @@ class TestPipeline(unittest.TestCase):
         )
         self.assertEqual(False, pipeline.has_timer)
         try:
-            timer = pipeline.timer
+            print(pipeline.timer)
             self.fail("should have thrown an exception")
         except RuntimeError:
             pass
@@ -1640,7 +1637,7 @@ class TestPipeline(unittest.TestCase):
         pipeline = more_options_pipeline()  # TODO swap label with typical
         self.assertEqual(False, pipeline.has_label_template)
         try:
-            label_template = pipeline.label_template
+            print(pipeline.label_template)
             self.fail("should have thrown an exception")
         except RuntimeError:
             pass
@@ -2773,12 +2770,12 @@ from gomatic import *
 
 configurator = GoCdConfigurator(FakeConfig(whatever))
 pipeline = configurator\
-	.ensure_pipeline_group("P.Group")\
-	.ensure_replacement_of_pipeline("more-options")\
-	.set_timer("0 15 22 * * ?")\
-	.set_git_material(GitMaterial("git@bitbucket.org:springersbm/gomatic.git", branch="a-branch", material_name="some-material-name", polling=False))\
-	.ensure_material(PipelineMaterial("pipeline2", "build")).ensure_environment_variables({'JAVA_HOME': '/opt/java/jdk-1.7'})\
-	.ensure_parameters({'environment': 'qa'})
+  .ensure_pipeline_group("P.Group")\
+  .ensure_replacement_of_pipeline("more-options")\
+  .set_timer("0 15 22 * * ?")\
+  .set_git_material(GitMaterial("git@bitbucket.org:springersbm/gomatic.git", branch="a-branch", material_name="some-material-name", polling=False))\
+  .ensure_material(PipelineMaterial("pipeline2", "build")).ensure_environment_variables({'JAVA_HOME': '/opt/java/jdk-1.7'})\
+  .ensure_parameters({'environment': 'qa'})
 stage = pipeline.ensure_stage("earlyStage")
 job = stage.ensure_job("earlyWorm").ensure_artifacts(set([BuildArtifact("scripts/*", "files"), BuildArtifact("target/universal/myapp*.zip", "artifacts"), TestArtifact("from", "to")])).set_runs_on_all_agents()
 job.add_task(ExecTask(['ls']))
@@ -2805,13 +2802,13 @@ job.add_task(ExecTask(['true']))
 
 class TestXmlFormatting(unittest.TestCase):
     def test_can_format_simple_xml(self):
-        expected = '<?xml version="1.0" ?>\n<top>\n\t<middle>stuff</middle>\n</top>'
+        expected = '<?xml version="1.0" ?>\n<top>\n\t<middle>stuff</middle>\n</top>\n'
         non_formatted = "<top><middle>stuff</middle></top>"
         formatted = prettify(non_formatted)
         self.assertEqual(expected, formatted)
 
     def test_can_format_more_complicated_xml(self):
-        expected = '<?xml version="1.0" ?>\n<top>\n\t<middle>\n\t\t<innermost>stuff</innermost>\n\t</middle>\n</top>'
+        expected = '<?xml version="1.0" ?>\n<top>\n\t<middle>\n\t\t<innermost>stuff</innermost>\n\t</middle>\n</top>\n'
         non_formatted = "<top><middle><innermost>stuff</innermost></middle></top>"
         formatted = prettify(non_formatted)
         self.assertEqual(expected, formatted)

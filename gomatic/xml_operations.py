@@ -165,6 +165,8 @@ def prettify(xml_string):
     xml = parseString(xml_string)
     formatted_but_with_blank_lines = xml.toprettyxml()
     non_blank_lines = [
-        l for l in formatted_but_with_blank_lines.split("\n") if len(l.strip()) != 0
+        line
+        for line in formatted_but_with_blank_lines.split("\n")
+        if len(line.strip()) != 0
     ]
-    return "\n".join(non_blank_lines)
+    return "\n".join(non_blank_lines) + "\n"

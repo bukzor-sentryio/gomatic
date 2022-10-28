@@ -370,7 +370,7 @@ class GoCdConfigurator:
             def has_kdiff3():
                 try:
                     return subprocess.call(["kdiff3", "-version"]) == 0
-                except:
+                except Exception:
                     return False
 
             if dry_run and config_before != config_after and has_kdiff3():

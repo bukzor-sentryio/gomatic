@@ -19,3 +19,28 @@ from gomatic.gocd.security import Security
 from gomatic.gocd.tasks import ExecTask
 from gomatic.gocd.tasks import FetchArtifactTask
 from gomatic.gocd.tasks import RakeTask
+
+
+__all__ = (
+    "empty_config",
+    "FakeHostRestClient",
+    "GoCdConfigurator",
+    "HostRestClient",
+    "Agent",
+    "ArtifactFor",
+    "BuildArtifact",
+    "ExternalArtifact",
+    "FetchArtifactDir",
+    "FetchArtifactFile",
+    "TestArtifact",
+    "GitMaterial",
+    "PipelineMaterial",
+    "Job",
+    "Pipeline",
+    "PipelineGroup",
+    "Tab",
+    "Security",
+    "ExecTask",
+    "FetchArtifactTask",
+    "RakeTask",
+)

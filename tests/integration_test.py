@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import itertools
 import multiprocessing
 import os
 import socket
@@ -40,7 +39,7 @@ def start_go_server(gocd_version, gocd_download_version_string, gocd_port):
         try:
             urlopen(f"http://localhost:{gocd_port}/go").read()
             return
-        except:
+        except Exception:
             count += 1
             time.sleep(1)
             if count % 10 == 0:
@@ -96,7 +95,7 @@ class populated_go_server:
 
             configurator.save_updated_config(save_config_locally=True)
             return GoCdConfigurator(HostRestClient(f"localhost:{self.gocd_port}"))
-        except:
+        except Exception:
             # Swallow exception if __exit__ returns a True value
             if self.__exit__(*sys.exc_info()):
                 pass
