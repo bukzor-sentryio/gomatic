@@ -1,0 +1,18 @@
+[tool.pyright]
+include = ["src"]
+exclude = [
+    "**/__pycache__",
+    "**/.terraform",
+    "venv",
+]
+
+defineConstant = { DEBUG = true }
+venvPath = false
+venv = false
+
+reportMissingModuleSource = true
+reportMissingImports = true
+reportMissingTypeStubs = false
+
+pythonVersion = "3.8"
+pythonPlatform = "Linux"
