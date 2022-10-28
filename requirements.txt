@@ -1,2 +1,4 @@
 requests
 bumpversion
+black
+pre-commit
