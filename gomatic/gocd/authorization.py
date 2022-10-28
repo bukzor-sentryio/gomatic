@@ -70,4 +70,3 @@ class Authorization(CommonEqualityMixin):
 
     def make_empty(self):
         PossiblyMissingElement(self.element).remove_all_children()
-

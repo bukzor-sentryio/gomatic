@@ -13,4 +13,3 @@ ADD https://download.go.cd/binaries/${GO_VERSION}/deb/go-server${GO_DOWNLOAD_VER
 RUN dpkg -i /tmp/go-server-${GO_VERSION}.deb
 
 RUN rm -f /tmp/go-server-${GO_VERSION}.deb
-
