@@ -1,5 +1,5 @@
-import xml.etree.ElementTree as ET
 import uuid
+import xml.etree.ElementTree as ET
 
 from distutils.version import LooseVersion
 

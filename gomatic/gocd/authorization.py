@@ -1,5 +1,6 @@
 from gomatic.mixins import CommonEqualityMixin
-from gomatic.xml_operations import Ensurance, PossiblyMissingElement
+from gomatic.xml_operations import Ensurance
+from gomatic.xml_operations import PossiblyMissingElement
 
 class User(CommonEqualityMixin):
     def __init__(self, element):

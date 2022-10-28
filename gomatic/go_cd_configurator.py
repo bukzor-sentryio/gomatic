@@ -10,14 +10,18 @@ from uuid import uuid4
 
 import requests
 
-from gomatic.gocd.config_repos import ConfigRepos
-from gomatic.gocd.security import Security
-from gomatic.gocd.elastic import Elastic
 from gomatic.gocd.agents import Agent
-from gomatic.gocd.pipelines import Pipeline, PipelineGroup
-from gomatic.gocd.repositories import Repository
 from gomatic.gocd.artifact_stores import ArtifactStores
-from gomatic.xml_operations import Ensurance, PossiblyMissingElement, move_all_to_end, prettify
+from gomatic.gocd.config_repos import ConfigRepos
+from gomatic.gocd.elastic import Elastic
+from gomatic.gocd.pipelines import Pipeline
+from gomatic.gocd.pipelines import PipelineGroup
+from gomatic.gocd.repositories import Repository
+from gomatic.gocd.security import Security
+from gomatic.xml_operations import Ensurance
+from gomatic.xml_operations import move_all_to_end
+from gomatic.xml_operations import PossiblyMissingElement
+from gomatic.xml_operations import prettify
 
 
 class GoCdConfigurator(object):

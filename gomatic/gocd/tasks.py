@@ -1,9 +1,8 @@
 from xml.etree import ElementTree as ET
 from xml.sax.saxutils import escape
 
-from gomatic.gocd.artifacts import (
-        fetch_artifact_src_from,
-        fetch_properties_from)
+from gomatic.gocd.artifacts import fetch_artifact_src_from
+from gomatic.gocd.artifacts import fetch_properties_from
 from gomatic.mixins import CommonEqualityMixin
 from gomatic.xml_operations import Ensurance
 

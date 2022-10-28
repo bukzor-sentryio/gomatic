@@ -1,28 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import os
 import unittest
 import xml.etree.ElementTree as ET
-import os
 from decimal import Decimal
 from xml.dom.minidom import parseString
 
-from gomatic import (
-    ExecTask,
-    FetchArtifactDir,
-    FetchArtifactFile,
-    FetchArtifactTask,
-    GitMaterial,
-    GoCdConfigurator,
-    Pipeline,
-    PipelineMaterial,
-    RakeTask,
-    Security,
-    Tab
-)
-from gomatic.fake import FakeHostRestClient, config, config_18_3_0, empty_config, empty_config_xml, load_file
-from gomatic.gocd.artifacts import Artifact, ArtifactFor, BuildArtifact, TestArtifact, ExternalArtifact
-from gomatic.gocd.artifact_stores import ArtifactStores, ArtifactStore
+from gomatic import ExecTask
+from gomatic import FetchArtifactDir
+from gomatic import FetchArtifactFile
+from gomatic import FetchArtifactTask
+from gomatic import GitMaterial
+from gomatic import GoCdConfigurator
+from gomatic import Pipeline
+from gomatic import PipelineMaterial
+from gomatic import RakeTask
+from gomatic import Security
+from gomatic import Tab
+from gomatic.fake import config
+from gomatic.fake import config_18_3_0
+from gomatic.fake import empty_config
+from gomatic.fake import empty_config_xml
+from gomatic.fake import FakeHostRestClient
+from gomatic.fake import load_file
+from gomatic.gocd.artifact_stores import ArtifactStore
+from gomatic.gocd.artifact_stores import ArtifactStores
+from gomatic.gocd.artifacts import Artifact
+from gomatic.gocd.artifacts import ArtifactFor
+from gomatic.gocd.artifacts import BuildArtifact
+from gomatic.gocd.artifacts import ExternalArtifact
+from gomatic.gocd.artifacts import TestArtifact
 from gomatic.gocd.pipelines import DEFAULT_LABEL_TEMPLATE
 from gomatic.xml_operations import prettify
 

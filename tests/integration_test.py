@@ -1,14 +1,14 @@
 #!/usr/bin/env python
-from __future__ import print_function
-import os
-import subprocess
-import multiprocessing
 import itertools
+import multiprocessing
+import os
 import socket
+import subprocess
 import sys
 import time
 import unittest
 import webbrowser
+
 from distutils.version import StrictVersion
 try:
     from urllib.request import urlopen
