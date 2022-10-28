@@ -1,13 +1,15 @@
 from xml.dom.minidom import parseString
 from xml.etree import ElementTree as ET
 
+Element = ET.Element
+
 
 class Ensurance:
-    def __init__(self, element):
+    def __init__(self, element: Element):
         assert element is not None
         self.element = element
 
-    def ensure_child(self, name):
+    def ensure_child(self, name: str):
         child = self.element.find(name)
         if child is None:
             result = ET.fromstring(f"<{name}></{name}>")
@@ -16,7 +18,7 @@ class Ensurance:
         else:
             return Ensurance(child)
 
-    def ensure_child_with_text(self, name, text):
+    def ensure_child_with_text(self, name: str, text: str):
         matching_elements = [e for e in self.element.findall(name) if e.text == text]
         if len(matching_elements) == 0:
             new_element = ET.fromstring(f"<{name}>{text}</{name}>")
@@ -25,7 +27,9 @@ class Ensurance:
         else:
             return Ensurance(matching_elements[0])
 
-    def ensure_child_with_attribute(self, name, attribute_name, attribute_value):
+    def ensure_child_with_attribute(
+        self, name: str, attribute_name: str, attribute_value: str
+    ):
         matching_elements = [
             e
             for e in self.element.findall(name)

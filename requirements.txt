@@ -7,3 +7,4 @@ coverage
 covdefaults
 pytest
 re-assert
+pyright

@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+from typing import Dict, Union
 from xml.etree import ElementTree as ET
 
 from gomatic.mixins import CommonEqualityMixin
 
+Config = Dict[str, str]
+FetchArtifact = Union["FetchArtifactFile", "FetchArtifactDir"]
 
-def fetch_artifact_src_from(element):
+
+def fetch_artifact_src_from(element: ET.Element) -> FetchArtifact:
     if "srcfile" in element.attrib:
         return FetchArtifactFile(element.attrib["srcfile"])
     if "srcdir" in element.attrib:
@@ -14,15 +20,21 @@ def fetch_artifact_src_from(element):
     )
 
 
-def fetch_properties_from(element):
-    props = {}
+def fetch_properties_from(element: ET.Element) -> Union[Config, None]:
+    props: dict[str, str] = {}
     for prop in element.iter("property"):
-        props[prop.find("key").text] = prop.find("value").text
+        key = prop.find("key")
+        if key is None or key.text is None:
+            continue
+        value = prop.find("value")
+        if value is None or value.text is None:
+            continue
+        props[key.text] = value.text
     return props if props else None
 
 
 class FetchArtifactFile(CommonEqualityMixin):
-    def __init__(self, src_value):
+    def __init__(self, src_value: str):
         self.__src_value = src_value
 
     def __repr__(self):
@@ -34,7 +46,7 @@ class FetchArtifactFile(CommonEqualityMixin):
 
 
 class FetchArtifactDir(CommonEqualityMixin):
-    def __init__(self, src_value):
+    def __init__(self, src_value: str):
         self.__src_value = src_value
 
     def __repr__(self):
@@ -48,17 +60,19 @@ class FetchArtifactDir(CommonEqualityMixin):
 class Artifact(CommonEqualityMixin):
     def __init__(
         self,
-        src=None,
-        dest=None,
-        id=None,
-        store_id=None,
-        config=None,
-        artifact_type="build",
+        src: str = None,
+        dest: str = None,
+        id: str = None,
+        store_id: str = None,
+        config: dict[str, str] = None,
+        artifact_type: str = "build",
     ):
         self._src = src
         self._dest = dest
         self._artifact_id = id
         self._store_id = store_id
+        if config is None:
+            config = {}
         self._config = config
         self._type = artifact_type
 
@@ -92,13 +106,13 @@ class Artifact(CommonEqualityMixin):
             return "ExternalArtifact"
         raise RuntimeError("Unknown artifact type %s" % self._type)
 
-    def append_to(self, element, gocd_18_3_and_above=False):
+    def append_to(self, element: ET.Element, gocd_18_3_and_above=False):
         if gocd_18_3_and_above:
             self._append_to_gocd_18_3_and_above(element)
         else:
             self._append_to_gocd_18_2_and_below(element)
 
-    def _append_to_gocd_18_3_and_above(self, element):
+    def _append_to_gocd_18_3_and_above(self, element: ET.Element):
         if self._artifact_id is not None:
             if self._config is None:
                 element.append(
@@ -134,7 +148,7 @@ class Artifact(CommonEqualityMixin):
                 )
             )
 
-    def _append_to_gocd_18_2_and_below(self, element):
+    def _append_to_gocd_18_2_and_below(self, element: ET.Element):
         if not self._type == "build" and not self._type == "test":
             raise RuntimeError(
                 "Artifact type '%s' not supported in GoCD 18.2 and below" % self._type
@@ -148,12 +162,12 @@ class Artifact(CommonEqualityMixin):
             )
 
     @classmethod
-    def get_artifact_for(cls, element):
+    def get_artifact_for(cls, element: ET.Element):
         src = element.attrib.get("src", None)
         dest = element.attrib.get("dest", None)
         id = element.attrib.get("id", None)
         store_id = element.attrib.get("storeId", None)
-        artifact_type_attribute = element.attrib.get("type", None)
+        artifact_type_attribute = element.attrib.get("type", "build")
         if id is not None:
             return cls(
                 id=id,
@@ -168,15 +182,15 @@ class Artifact(CommonEqualityMixin):
             return cls(src=src, dest=dest, artifact_type=artifact_type_attribute)
 
     @classmethod
-    def get_build_artifact(cls, src, dest=None):
+    def get_build_artifact(cls, src: str, dest: str = None):
         return cls(src=src, dest=dest, artifact_type="build")
 
     @classmethod
-    def get_test_artifact(cls, src, dest=None):
+    def get_test_artifact(cls, src: str, dest: str = None):
         return cls(src=src, dest=dest, artifact_type="test")
 
     @classmethod
-    def get_external_artifact(cls, id, store_id, config=None):
+    def get_external_artifact(cls, id: str, store_id: str, config: Config = None):
         return cls(id=id, store_id=store_id, config=config, artifact_type="external")
 
 

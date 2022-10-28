@@ -5,15 +5,12 @@ import socket
 import subprocess
 import sys
 import time
+from urllib.request import urlopen
 import unittest
 import webbrowser
 
 from distutils.version import StrictVersion
 
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
 
 from gomatic import ExecTask, GitMaterial, GoCdConfigurator, HostRestClient
 from gomatic.gocd.artifacts import Artifact

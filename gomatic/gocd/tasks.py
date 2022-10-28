@@ -1,17 +1,21 @@
+import typing
+
 from xml.etree import ElementTree as ET
 from xml.sax.saxutils import escape
 
-from gomatic.gocd.artifacts import fetch_artifact_src_from
+from gomatic.gocd.artifacts import Config, FetchArtifact, fetch_artifact_src_from
 from gomatic.gocd.artifacts import fetch_properties_from
 from gomatic.mixins import CommonEqualityMixin
 from gomatic.xml_operations import Ensurance
 
+Command = typing.List[str]
 
-def Task(element):
+
+def Task(element: ET.Element):
     runif = runif_from(element)
     if element.tag == "exec":
         command_and_args = [element.attrib["command"]] + [
-            e.text for e in element.findall("arg")
+            e.text for e in element.findall("arg") if e.text is not None
         ]
         working_dir = element.attrib.get(
             "workingdir", None
@@ -51,7 +55,7 @@ def Task(element):
 
 
 class AbstractTask(CommonEqualityMixin):
-    def __init__(self, runif):
+    def __init__(self, runif: str):
         self._runif = runif
         valid_values = ["passed", "failed", "any"]
         if runif not in valid_values:
@@ -68,18 +72,18 @@ class AbstractTask(CommonEqualityMixin):
 class FetchArtifactTask(AbstractTask):
     def __init__(
         self,
-        pipeline,
-        stage,
-        job,
-        src=None,
-        dest=None,
+        pipeline: str,
+        stage: str,
+        job: str,
+        src: FetchArtifact = None,
+        dest: str = None,
         runif="passed",
-        origin=None,
-        artifactOrigin=None,
-        id=None,
-        config=None,
+        origin: str = None,
+        artifactOrigin: str = None,
+        id: str = None,
+        config: Config = None,
     ):
-        super(self.__class__, self).__init__(runif)
+        super().__init__(runif)
         self.__pipeline = pipeline
         self.__stage = stage
         self.__job = job
@@ -88,6 +92,8 @@ class FetchArtifactTask(AbstractTask):
         self.__origin = origin
         self.__artifact_origin = artifactOrigin
         self.__artifact_id = id
+        if config is None:
+            config = {}
         self.__config = config
 
     def __repr__(self):
@@ -176,7 +182,7 @@ class FetchArtifactTask(AbstractTask):
     def config(self):
         return self.__config
 
-    def append_to(self, element):
+    def append_to(self, element: ET.Element):
         dest_parameter = ""
         if self.__dest is not None:
             dest_parameter = ' dest="%s"' % self.__dest
@@ -210,6 +216,7 @@ class FetchArtifactTask(AbstractTask):
                 )
             )
         else:
+            assert self.src is not None
             src_type, src_value = self.src.as_xml_type_and_value
             new_element = ET.fromstring(
                 (
@@ -229,8 +236,10 @@ class FetchArtifactTask(AbstractTask):
 
 
 class ExecTask(AbstractTask):
-    def __init__(self, command_and_args, working_dir=None, runif="passed"):
-        super(self.__class__, self).__init__(runif)
+    def __init__(
+        self, command_and_args: Command, working_dir: str = None, runif="passed"
+    ):
+        super().__init__(runif)
         self.__command_and_args = command_and_args
         self.__working_dir = working_dir
 
@@ -282,7 +291,7 @@ class ExecTask(AbstractTask):
 
 class RakeTask(AbstractTask):
     def __init__(self, target, runif="passed"):
-        super(self.__class__, self).__init__(runif)
+        super().__init__(runif)
         self.__target = target
 
     def __repr__(self):

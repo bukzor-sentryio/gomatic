@@ -120,7 +120,7 @@ class AuthConfig(CommonEqualityMixin):
         return self.element.get("pluginId")
 
     def __eq__(self, other):
-        return self.auth_plugin_id == other.auth_plugin_id
+        return self.plugin_id == other.plugin_id
 
 
 class AuthConfigs(CommonEqualityMixin):

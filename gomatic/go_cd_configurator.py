@@ -4,6 +4,7 @@ import json
 import subprocess
 import sys
 import time
+import typing
 import xml.etree.ElementTree as ET
 from decimal import Decimal
 from uuid import uuid4
@@ -22,6 +23,8 @@ from gomatic.xml_operations import Ensurance
 from gomatic.xml_operations import move_all_to_end
 from gomatic.xml_operations import PossiblyMissingElement
 from gomatic.xml_operations import prettify
+
+NoneDefault = typing.cast(typing.Any, None)
 
 
 class GoCdConfigurator:
@@ -394,11 +397,11 @@ class HostRestClient:
     def __init__(
         self,
         host,
-        username=None,
-        password=None,
+        username: str = NoneDefault,
+        password: str = NoneDefault,
         ssl=False,
         verify_ssl=True,
-        access_token=None,
+        access_token: str = NoneDefault,
     ):
         self.__host = host
         self.__username = username

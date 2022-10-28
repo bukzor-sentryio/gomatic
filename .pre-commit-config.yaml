@@ -39,4 +39,4 @@ repos:
             language: python
             entry: python -m pyright
             files: \.py$
-            additional_dependencies: [pyright, gomatic]
+            additional_dependencies: [pyright]

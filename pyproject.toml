@@ -1,18 +1,14 @@
 [tool.pyright]
-include = ["src"]
+include = ["."]
 exclude = [
     "**/__pycache__",
     "**/.terraform",
     "venv",
+    ".tox",
 ]
-
-defineConstant = { DEBUG = true }
-venvPath = false
-venv = false
-
-reportMissingModuleSource = true
-reportMissingImports = true
-reportMissingTypeStubs = false
+typeCheckingMode = "strict"
+strictParameterNoneValue = false
+reportMissingParameterType = false
 
 pythonVersion = "3.8"
 pythonPlatform = "Linux"
