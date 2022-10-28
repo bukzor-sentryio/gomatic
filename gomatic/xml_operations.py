@@ -10,7 +10,7 @@ class Ensurance:
     def ensure_child(self, name):
         child = self.element.find(name)
         if child is None:
-            result = ET.fromstring("<{}></{}>".format(name, name))
+            result = ET.fromstring(f"<{name}></{name}>")
             self.element.append(result)
             return Ensurance(result)
         else:
@@ -19,7 +19,7 @@ class Ensurance:
     def ensure_child_with_text(self, name, text):
         matching_elements = [e for e in self.element.findall(name) if e.text == text]
         if len(matching_elements) == 0:
-            new_element = ET.fromstring("<{}>{}</{}>".format(name, text, name))
+            new_element = ET.fromstring(f"<{name}>{text}</{name}>")
             self.element.append(new_element)
             return Ensurance(new_element)
         else:
@@ -33,7 +33,7 @@ class Ensurance:
         ]
         if len(matching_elements) == 0:
             new_element = ET.fromstring(
-                '<{} {}="{}"></{}>'.format(name, attribute_name, attribute_value, name)
+                f'<{name} {attribute_name}="{attribute_value}"></{name}>'
             )
             self.element.append(new_element)
             return Ensurance(new_element)

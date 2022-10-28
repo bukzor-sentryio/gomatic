@@ -78,9 +78,9 @@ class Artifact(CommonEqualityMixin):
                     self._config,
                 )
         if self._dest is None:
-            return '{}("{}")'.format(self.constructor, self._src)
+            return f'{self.constructor}("{self._src}")'
         else:
-            return '{}("{}", "{}")'.format(self.constructor, self._src, self._dest)
+            return f'{self.constructor}("{self._src}", "{self._dest}")'
 
     @property
     def constructor(self):
@@ -125,7 +125,7 @@ class Artifact(CommonEqualityMixin):
         elif self._dest is None:
             element.append(
                 ET.fromstring(
-                    '<artifact src="{}" type="{}" />'.format(self._src, self._type)
+                    f'<artifact src="{self._src}" type="{self._type}" />'
                 )
             )
         else:
@@ -143,11 +143,11 @@ class Artifact(CommonEqualityMixin):
             )
         tag = "artifact" if self._type == "build" else "test"
         if self._dest is None:
-            element.append(ET.fromstring('<{} src="{}" />'.format(tag, self._src)))
+            element.append(ET.fromstring(f'<{tag} src="{self._src}" />'))
         else:
             element.append(
                 ET.fromstring(
-                    '<{} src="{}" dest="{}" />'.format(tag, self._src, self._dest)
+                    f'<{tag} src="{self._src}" dest="{self._dest}" />'
                 )
             )
 

@@ -286,7 +286,7 @@ class RakeTask(AbstractTask):
         self.__target = target
 
     def __repr__(self):
-        return 'RakeTask("{}", "{}")'.format(self.__target, self._runif)
+        return f'RakeTask("{self.__target}", "{self._runif}")'
 
     type = "rake"
 

@@ -23,11 +23,11 @@ class Tab(CommonEqualityMixin):
         self.__path = path
 
     def __repr__(self):
-        return 'Tab("{}", "{}")'.format(self.__name, self.__path)
+        return f'Tab("{self.__name}", "{self.__path}")'
 
     def append_to(self, element):
         element.append(
-            ET.fromstring('<tab name="{}" path="{}" />'.format(self.__name, self.__path))
+            ET.fromstring(f'<tab name="{self.__name}" path="{self.__path}" />')
         )
 
 
@@ -37,7 +37,7 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
         self.parent_stage = parent_stage
 
     def __repr__(self):
-        return "Job('{}', {})".format(self.name, self.tasks)
+        return f"Job('{self.name}', {self.tasks})"
 
     @property
     def name(self):
@@ -335,7 +335,7 @@ class Stage(CommonEqualityMixin, EnvironmentVariableMixin):
             job.reorder_elements_to_please_go()
 
     def as_python_commands_applied_to(self, receiver):
-        result = 'stage = {}.ensure_stage("{}")'.format(receiver, self.name)
+        result = f'stage = {receiver}.ensure_stage("{self.name}")'
 
         result += self.as_python()
 
@@ -442,7 +442,7 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
         )
 
     def __repr__(self):
-        return 'Pipeline("{}", "{}")'.format(self.name, self.parent)
+        return f'Pipeline("{self.name}", "{self.parent}")'
 
     def set_automatic_pipeline_locking(self):
         self.element.attrib["isLocked"] = "true"
@@ -777,7 +777,7 @@ class PipelineGroup(CommonEqualityMixin):
             return self._matching_pipelines(name)[0]
         else:
             raise RuntimeError(
-                'Cannot find pipeline with name "{}" in {}'.format(name, self.pipelines)
+                f'Cannot find pipeline with name "{name}" in {self.pipelines}'
             )
 
     def ensure_authorization(self):
