@@ -12,17 +12,17 @@ class Profile(CommonEqualityMixin):
     @property
     def properties(self):
         props = {}
-        for prop in self.element.findall('property'):
-            props[prop.find('key').text] = prop.find('value').text
+        for prop in self.element.findall("property"):
+            props[prop.find("key").text] = prop.find("value").text
         return props
 
     @property
     def profile_id(self):
-        return self.element.get('id')
+        return self.element.get("id")
 
     @property
     def plugin_id(self):
-        return self.element.get('pluginId')
+        return self.element.get("pluginId")
 
     def __eq__(self, other):
         return self.profile_id == other.profile_id
@@ -34,13 +34,20 @@ class Profiles(CommonEqualityMixin):
 
     @property
     def profile(self):
-        return [Profile(e) for e in self.element.findall('profile')]
+        return [Profile(e) for e in self.element.findall("profile")]
 
     def ensure_profile(self, profile_id, plugin_id, properties):
-        properties_xml = "".join(["<property><key>{}</key><value>{}</value></property>".format(k, v) for k, v in properties.items()])
-        profile = ET.fromstring('<profile id="{}" pluginId="{}">{}</profile>'.format(profile_id,
-            plugin_id,
-            properties_xml))
+        properties_xml = "".join(
+            [
+                "<property><key>{}</key><value>{}</value></property>".format(k, v)
+                for k, v in properties.items()
+            ]
+        )
+        profile = ET.fromstring(
+            '<profile id="{}" pluginId="{}">{}</profile>'.format(
+                profile_id, plugin_id, properties_xml
+            )
+        )
         self.element.append(profile)
         return Profile(profile)
 
@@ -55,7 +62,9 @@ class Profiles(CommonEqualityMixin):
 
     def __getitem__(self, index):
         if not isinstance(index, int):
-            raise Exception("Profiles index must be an integer, got {}".format(type(index)))
+            raise Exception(
+                "Profiles index must be an integer, got {}".format(type(index))
+            )
         return self.profile[index]
 
     def __len__(self):
@@ -68,10 +77,10 @@ class Elastic(CommonEqualityMixin):
 
     @property
     def profiles(self):
-        return Profiles(self.element.find('profiles'))
+        return Profiles(self.element.find("profiles"))
 
     def ensure_profiles(self):
-        profile = Ensurance(self.element).ensure_child('profiles')
+        profile = Ensurance(self.element).ensure_child("profiles")
         return Profiles(profile.element)
 
     def ensure_replacement_of_profiles(self):

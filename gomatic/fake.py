@@ -7,18 +7,23 @@ empty_config_xml = """<?xml version="1.0" encoding="utf-8"?>
 </cruise>"""
 
 # This is the oldest version we currently support. Ideally we can make this more automagic in the future
-DEFAULT_VERSION='16.3.0'
+DEFAULT_VERSION = "16.3.0"
+
 
 class FakeResponse(object):
     def __init__(self, text):
         self.text = text
-        self.headers = {'x-cruise-config-md5': '42'}
+        self.headers = {"x-cruise-config-md5": "42"}
         self.status_code = 200
+
     def json(self):
         return json.loads(self.text)
 
+
 class FakeHostRestClient(object):
-    def __init__(self, config_string, thing_to_recreate_itself=None, version=DEFAULT_VERSION):
+    def __init__(
+        self, config_string, thing_to_recreate_itself=None, version=DEFAULT_VERSION
+    ):
 
         self.config_string = config_string
         self.thing_to_recreate_itself = thing_to_recreate_itself
@@ -26,7 +31,7 @@ class FakeHostRestClient(object):
 
     def __repr__(self):
         if self.thing_to_recreate_itself is None:
-            return 'FakeConfig(whatever)'
+            return "FakeConfig(whatever)"
         else:
             return self.thing_to_recreate_itself
 
@@ -41,7 +46,7 @@ class FakeHostRestClient(object):
 
 
 def load_file(config_name):
-    with codecs.open('test-data/' + config_name + '.xml', encoding='utf-8') as xml_file:
+    with codecs.open("test-data/" + config_name + ".xml", encoding="utf-8") as xml_file:
         xml_data = xml_file.read()
     return xml_data
 
@@ -49,8 +54,10 @@ def load_file(config_name):
 def config(config_name):
     return FakeHostRestClient(load_file(config_name))
 
+
 def config_18_3_0(config_name):
     return FakeHostRestClient(load_file(config_name), version="18.3.0")
+
 
 def empty_config():
     return FakeHostRestClient(empty_config_xml, "empty_config()")

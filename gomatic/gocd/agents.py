@@ -8,4 +8,4 @@ class Agent(CommonEqualityMixin, ResourceMixin):
 
     @property
     def hostname(self):
-        return self.element.attrib['hostname']
+        return self.element.attrib["hostname"]

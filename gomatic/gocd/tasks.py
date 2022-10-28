@@ -10,34 +10,55 @@ from gomatic.xml_operations import Ensurance
 def Task(element):
     runif = runif_from(element)
     if element.tag == "exec":
-        command_and_args = [element.attrib["command"]] + [e.text for e in element.findall('arg')]
-        working_dir = element.attrib.get("workingdir", None)  # TODO not ideal to return "None" for working_dir
+        command_and_args = [element.attrib["command"]] + [
+            e.text for e in element.findall("arg")
+        ]
+        working_dir = element.attrib.get(
+            "workingdir", None
+        )  # TODO not ideal to return "None" for working_dir
         return ExecTask(command_and_args, working_dir, runif)
     if element.tag == "fetchartifact":
-        dest = element.attrib.get('dest', None)
-        origin = element.attrib.get('origin', None)
-        artifact_origin = element.attrib.get('artifactOrigin', None)
-        artifact_id = element.attrib.get('artifactId', None)
-        if artifact_origin == 'external':
+        dest = element.attrib.get("dest", None)
+        origin = element.attrib.get("origin", None)
+        artifact_origin = element.attrib.get("artifactOrigin", None)
+        artifact_id = element.attrib.get("artifactId", None)
+        if artifact_origin == "external":
             return FetchArtifactTask(
-            element.attrib['pipeline'], element.attrib['stage'],
-            element.attrib['job'], None, None, runif, origin, artifact_origin,
-            artifact_id, fetch_properties_from(element))
+                element.attrib["pipeline"],
+                element.attrib["stage"],
+                element.attrib["job"],
+                None,
+                None,
+                runif,
+                origin,
+                artifact_origin,
+                artifact_id,
+                fetch_properties_from(element),
+            )
         return FetchArtifactTask(
-            element.attrib['pipeline'], element.attrib['stage'],
-            element.attrib['job'], fetch_artifact_src_from(element),
-            dest, runif, origin, artifact_origin)
+            element.attrib["pipeline"],
+            element.attrib["stage"],
+            element.attrib["job"],
+            fetch_artifact_src_from(element),
+            dest,
+            runif,
+            origin,
+            artifact_origin,
+        )
     if element.tag == "rake":
-        return RakeTask(element.attrib['target'])
+        return RakeTask(element.attrib["target"])
     raise RuntimeError("Don't know task type %s" % element.tag)
 
 
 class AbstractTask(CommonEqualityMixin):
     def __init__(self, runif):
         self._runif = runif
-        valid_values = ['passed', 'failed', 'any']
+        valid_values = ["passed", "failed", "any"]
         if runif not in valid_values:
-            raise RuntimeError('Cannot create task with runif="%s" - it must be one of %s' % (runif, valid_values))
+            raise RuntimeError(
+                'Cannot create task with runif="%s" - it must be one of %s'
+                % (runif, valid_values)
+            )
 
     @property
     def runif(self):
@@ -45,7 +66,19 @@ class AbstractTask(CommonEqualityMixin):
 
 
 class FetchArtifactTask(AbstractTask):
-    def __init__(self, pipeline, stage, job, src=None, dest=None, runif="passed", origin=None, artifactOrigin=None, id=None, config=None):
+    def __init__(
+        self,
+        pipeline,
+        stage,
+        job,
+        src=None,
+        dest=None,
+        runif="passed",
+        origin=None,
+        artifactOrigin=None,
+        id=None,
+        config=None,
+    ):
         super(self.__class__, self).__init__(runif)
         self.__pipeline = pipeline
         self.__stage = stage
@@ -74,12 +107,38 @@ class FetchArtifactTask(AbstractTask):
         if self.__artifact_origin is not None:
             artifact_origin_parameter = ', artifactOrigin="%s"' % self.__artifact_origin
 
-        if self.__artifact_origin == 'external':
-            return ('FetchArtifactTask("%s", "%s", "%s", id="%s", config=%s' % (self.__pipeline, self.__stage, self.__job, self.__artifact_id, self.__config)) + dest_parameter + runif_parameter + origin_parameter + artifact_origin_parameter + ')'
+        if self.__artifact_origin == "external":
+            return (
+                (
+                    'FetchArtifactTask("%s", "%s", "%s", id="%s", config=%s'
+                    % (
+                        self.__pipeline,
+                        self.__stage,
+                        self.__job,
+                        self.__artifact_id,
+                        self.__config,
+                    )
+                )
+                + dest_parameter
+                + runif_parameter
+                + origin_parameter
+                + artifact_origin_parameter
+                + ")"
+            )
 
-        return ('FetchArtifactTask("%s", "%s", "%s", %s' % (self.__pipeline, self.__stage, self.__job, self.__src)) + dest_parameter + runif_parameter + origin_parameter + artifact_origin_parameter + ')'
+        return (
+            (
+                'FetchArtifactTask("%s", "%s", "%s", %s'
+                % (self.__pipeline, self.__stage, self.__job, self.__src)
+            )
+            + dest_parameter
+            + runif_parameter
+            + origin_parameter
+            + artifact_origin_parameter
+            + ")"
+        )
 
-    type = 'fetchartifact'
+    type = "fetchartifact"
 
     @property
     def pipeline(self):
@@ -130,14 +189,38 @@ class FetchArtifactTask(AbstractTask):
         if self.__artifact_origin is not None:
             artifact_origin_parameter = ' artifactOrigin="%s"' % self.__artifact_origin
 
-        if self.__artifact_origin == 'external':
-            properties_xml = "".join(["<property><key>{}</key><value>{}</value></property>".format(k, str(v or '')) for k, v in self.__config.items()])
+        if self.__artifact_origin == "external":
+            properties_xml = "".join(
+                [
+                    "<property><key>{}</key><value>{}</value></property>".format(
+                        k, str(v or "")
+                    )
+                    for k, v in self.__config.items()
+                ]
+            )
             fetch_artifact_xml = """<fetchartifact pipeline="{}" stage="{}" job="{}" artifactId="{}" artifactOrigin="{}"><configuration>{}</configuration></fetchartifact>"""
-            new_element = ET.fromstring(fetch_artifact_xml.format(self.__pipeline, self.__stage, self.__job, self.__artifact_id, self.__artifact_origin, properties_xml))
+            new_element = ET.fromstring(
+                fetch_artifact_xml.format(
+                    self.__pipeline,
+                    self.__stage,
+                    self.__job,
+                    self.__artifact_id,
+                    self.__artifact_origin,
+                    properties_xml,
+                )
+            )
         else:
             src_type, src_value = self.src.as_xml_type_and_value
             new_element = ET.fromstring(
-            ('<fetchartifact pipeline="%s" stage="%s" job="%s" %s="%s"' % (self.__pipeline, self.__stage, self.__job, src_type, src_value)) + dest_parameter + origin_parameter + artifact_origin_parameter + '/>')
+                (
+                    '<fetchartifact pipeline="%s" stage="%s" job="%s" %s="%s"'
+                    % (self.__pipeline, self.__stage, self.__job, src_type, src_value)
+                )
+                + dest_parameter
+                + origin_parameter
+                + artifact_origin_parameter
+                + "/>"
+            )
 
         new_element.append(ET.fromstring('<runif status="%s" />' % self.runif))
 
@@ -160,9 +243,14 @@ class ExecTask(AbstractTask):
         if self._runif != "passed":
             runif_parameter = ', runif="%s"' % self._runif
 
-        return ('ExecTask(%s' % self.command_and_args) + working_dir_parameter + runif_parameter + ')'
+        return (
+            ("ExecTask(%s" % self.command_and_args)
+            + working_dir_parameter
+            + runif_parameter
+            + ")"
+        )
 
-    type = 'exec'
+    type = "exec"
 
     @property
     def command_and_args(self):
@@ -174,12 +262,17 @@ class ExecTask(AbstractTask):
 
     def append_to(self, element):
         if self.__working_dir is None:
-            new_element = ET.fromstring('<exec command="%s"></exec>' % self.__command_and_args[0])
+            new_element = ET.fromstring(
+                '<exec command="%s"></exec>' % self.__command_and_args[0]
+            )
         else:
-            new_element = ET.fromstring('<exec command="%s" workingdir="%s"></exec>' % (self.__command_and_args[0], self.__working_dir))
+            new_element = ET.fromstring(
+                '<exec command="%s" workingdir="%s"></exec>'
+                % (self.__command_and_args[0], self.__working_dir)
+            )
 
         for arg in self.__command_and_args[1:]:
-            new_element.append(ET.fromstring('<arg>%s</arg>' % escape(arg)))
+            new_element.append(ET.fromstring("<arg>%s</arg>" % escape(arg)))
 
         new_element.append(ET.fromstring('<runif status="%s" />' % self.runif))
 
@@ -195,7 +288,7 @@ class RakeTask(AbstractTask):
     def __repr__(self):
         return 'RakeTask("%s", "%s")' % (self.__target, self._runif)
 
-    type = 'rake'
+    type = "rake"
 
     @property
     def target(self):
@@ -208,11 +301,11 @@ class RakeTask(AbstractTask):
 
 
 def runif_from(element):
-    runifs = [e.attrib['status'] for e in element.findall("runif")]
+    runifs = [e.attrib["status"] for e in element.findall("runif")]
     if len(runifs) == 0:
-        return 'passed'
+        return "passed"
     if len(runifs) == 1:
         return runifs[0]
-    if len(runifs) == 2 and 'passed' in runifs and 'failed' in runifs:
-        return 'any'
+    if len(runifs) == 2 and "passed" in runifs and "failed" in runifs:
+        return "any"
     raise RuntimeError("Don't know what multiple runif values (%s) means" % runifs)

@@ -10,7 +10,7 @@ class Ensurance(object):
     def ensure_child(self, name):
         child = self.element.find(name)
         if child is None:
-            result = ET.fromstring('<%s></%s>' % (name, name))
+            result = ET.fromstring("<%s></%s>" % (name, name))
             self.element.append(result)
             return Ensurance(result)
         else:
@@ -19,16 +19,22 @@ class Ensurance(object):
     def ensure_child_with_text(self, name, text):
         matching_elements = [e for e in self.element.findall(name) if e.text == text]
         if len(matching_elements) == 0:
-            new_element = ET.fromstring('<%s>%s</%s>' % (name, text, name))
+            new_element = ET.fromstring("<%s>%s</%s>" % (name, text, name))
             self.element.append(new_element)
             return Ensurance(new_element)
         else:
             return Ensurance(matching_elements[0])
 
     def ensure_child_with_attribute(self, name, attribute_name, attribute_value):
-        matching_elements = [e for e in self.element.findall(name) if e.attrib[attribute_name] == attribute_value]
+        matching_elements = [
+            e
+            for e in self.element.findall(name)
+            if e.attrib[attribute_name] == attribute_value
+        ]
         if len(matching_elements) == 0:
-            new_element = ET.fromstring('<%s %s="%s"></%s>' % (name, attribute_name, attribute_value, name))
+            new_element = ET.fromstring(
+                '<%s %s="%s"></%s>' % (name, attribute_name, attribute_value, name)
+            )
             self.element.append(new_element)
             return Ensurance(new_element)
         else:
@@ -37,15 +43,25 @@ class Ensurance(object):
     def ensure_child_with_descendant(self, name, descendant_name, descendant_value):
         matching_elements = [e for e in self.element.findall(name)]
         if len(matching_elements) == 0:
-            new_element = ET.fromstring('<%s><%s>%s</%s></%s>' % (name, descendant_name, descendant_value, descendant_name,  name))
+            new_element = ET.fromstring(
+                "<%s><%s>%s</%s></%s>"
+                % (name, descendant_name, descendant_value, descendant_name, name)
+            )
             self.element.append(new_element)
             return Ensurance(new_element)
         else:
             for e in matching_elements:
-                value = PossiblyMissingElement(e).possibly_missing_child(descendant_name).text
+                value = (
+                    PossiblyMissingElement(e)
+                    .possibly_missing_child(descendant_name)
+                    .text
+                )
                 if value is not None and value == descendant_value:
                     return Ensurance(e)
-            new_element = ET.fromstring('<%s><%s>%s</%s></%s>' % (name, descendant_name, descendant_value, descendant_name,  name))
+            new_element = ET.fromstring(
+                "<%s><%s>%s</%s></%s>"
+                % (name, descendant_name, descendant_value, descendant_name, name)
+            )
             self.element.append(new_element)
             return Ensurance(new_element)
 
@@ -91,7 +107,11 @@ class PossiblyMissingElement(object):
             return self.__element
 
     def attribute(self, name):
-        return self.__element.attrib[name] if self.__element is not None and name in self.__element.attrib else None
+        return (
+            self.__element.attrib[name]
+            if self.__element is not None and name in self.__element.attrib
+            else None
+        )
 
     @property
     def text(self):
@@ -101,7 +121,9 @@ class PossiblyMissingElement(object):
         if self.__element is None:
             return False
         else:
-            return name in self.__element.attrib and self.__element.attrib[name] == value
+            return (
+                name in self.__element.attrib and self.__element.attrib[name] == value
+            )
 
     def remove_all_children(self, tag_name_to_remove=None):
         children = []
@@ -131,12 +153,18 @@ def move_all_to_end(parent_element, tag):
 
 
 def ignore_patterns_in(element):
-    children = PossiblyMissingElement(element).possibly_missing_child("filter").findall("ignore")
-    return set([e.attrib['pattern'] for e in children])
+    children = (
+        PossiblyMissingElement(element)
+        .possibly_missing_child("filter")
+        .findall("ignore")
+    )
+    return set([e.attrib["pattern"] for e in children])
 
 
 def prettify(xml_string):
     xml = parseString(xml_string)
     formatted_but_with_blank_lines = xml.toprettyxml()
-    non_blank_lines = [l for l in formatted_but_with_blank_lines.split('\n') if len(l.strip()) != 0]
-    return '\n'.join(non_blank_lines)
+    non_blank_lines = [
+        l for l in formatted_but_with_blank_lines.split("\n") if len(l.strip()) != 0
+    ]
+    return "\n".join(non_blank_lines)

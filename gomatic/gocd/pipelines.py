@@ -26,7 +26,9 @@ class Tab(CommonEqualityMixin):
         return 'Tab("%s", "%s")' % (self.__name, self.__path)
 
     def append_to(self, element):
-        element.append(ET.fromstring('<tab name="%s" path="%s" />' % (self.__name, self.__path)))
+        element.append(
+            ET.fromstring('<tab name="%s" path="%s" />' % (self.__name, self.__path))
+        )
 
 
 class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
@@ -39,21 +41,21 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
 
     @property
     def name(self):
-        return self.element.attrib['name']
+        return self.element.attrib["name"]
 
     @property
     def has_timeout(self):
-        return 'timeout' in self.element.attrib
+        return "timeout" in self.element.attrib
 
     @property
     def timeout(self):
         if not self.has_timeout:
             raise RuntimeError("Job (%s) does not have timeout" % self)
-        return self.element.attrib['timeout']
+        return self.element.attrib["timeout"]
 
     @timeout.setter
     def timeout(self, timeout):
-        self.element.attrib['timeout'] = timeout
+        self.element.attrib["timeout"] = timeout
 
     def set_timeout(self, timeout):
         self.timeout = timeout
@@ -61,11 +63,11 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
 
     @property
     def runs_on_all_agents(self):
-        return self.element.attrib.get('runOnAllAgents', 'false') == 'true'
+        return self.element.attrib.get("runOnAllAgents", "false") == "true"
 
     @runs_on_all_agents.setter
     def runs_on_all_agents(self, run_on_all_agents):
-        self.element.attrib['runOnAllAgents'] = 'true' if run_on_all_agents else 'false'
+        self.element.attrib["runOnAllAgents"] = "true" if run_on_all_agents else "false"
 
     def set_runs_on_all_agents(self, run_on_all_agents=True):
         self.runs_on_all_agents = run_on_all_agents
@@ -73,17 +75,17 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
 
     @property
     def has_elastic_profile_id(self):
-        return 'elasticProfileId' in self.element.attrib
+        return "elasticProfileId" in self.element.attrib
 
     @property
     def elastic_profile_id(self):
         if not self.has_elastic_profile_id:
             raise RuntimeError("Job (%s) does not have elasticProfileId" % self)
-        return self.element.attrib['elasticProfileId']
+        return self.element.attrib["elasticProfileId"]
 
     @elastic_profile_id.setter
     def elastic_profile_id(self, elastic_profile_id):
-        self.element.attrib['elasticProfileId'] = elastic_profile_id
+        self.element.attrib["elasticProfileId"] = elastic_profile_id
 
     def set_elastic_profile_id(self, elastic_profile_id):
         self.elastic_profile_id = elastic_profile_id
@@ -91,42 +93,49 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
 
     @property
     def has_run_instance_count(self):
-        return 'runInstanceCount' in self.element.attrib
+        return "runInstanceCount" in self.element.attrib
 
     @property
     def run_instance_count(self):
         if not self.has_run_instance_count:
             raise RuntimeError("Job (%s) does not have runInstanceCount" % self)
-        return self.element.attrib['runInstanceCount']
+        return self.element.attrib["runInstanceCount"]
 
     @run_instance_count.setter
     def run_instance_count(self, run_instance_count):
-        self.element.attrib['runInstanceCount'] = run_instance_count
+        self.element.attrib["runInstanceCount"] = run_instance_count
 
     def set_run_instance_count(self, run_instance_count):
         self.run_instance_count = run_instance_count
         return self
 
     def __get_gocd_version_string(self):
-        if self.parent_stage is not None \
-                and self.parent_stage.parent_pipeline is not None \
-                and self.parent_stage.parent_pipeline.parent is not None \
-                and type(self.parent_stage.parent_pipeline.parent) is not str \
-                and self.parent_stage.parent_pipeline.parent.configurator is not None:
+        if (
+            self.parent_stage is not None
+            and self.parent_stage.parent_pipeline is not None
+            and self.parent_stage.parent_pipeline.parent is not None
+            and type(self.parent_stage.parent_pipeline.parent) is not str
+            and self.parent_stage.parent_pipeline.parent.configurator is not None
+        ):
             return self.parent_stage.parent_pipeline.parent.configurator.server_version
-        return '17.11.0'
+        return "17.11.0"
 
     def is_gocd_18_3_and_above(self):
         version = self.__get_gocd_version_string()
-        gocd_major_version = int(version.split('.')[0])
-        gocd_minor_version = int(version.split('.')[1])
+        gocd_major_version = int(version.split(".")[0])
+        gocd_minor_version = int(version.split(".")[1])
 
-        return (gocd_major_version == 18 and gocd_minor_version >= 3) or \
-               (gocd_major_version >= 19)
+        return (gocd_major_version == 18 and gocd_minor_version >= 3) or (
+            gocd_major_version >= 19
+        )
 
     @property
     def artifacts(self):
-        artifact_elements = PossiblyMissingElement(self.element).possibly_missing_child("artifacts").iterator
+        artifact_elements = (
+            PossiblyMissingElement(self.element)
+            .possibly_missing_child("artifacts")
+            .iterator
+        )
         return set([Artifact.get_artifact_for(e) for e in artifact_elements])
 
     def ensure_artifacts(self, artifacts):
@@ -139,7 +148,12 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
 
     @property
     def tabs(self):
-        return [Tab(e.attrib['name'], e.attrib['path']) for e in PossiblyMissingElement(self.element).possibly_missing_child('tabs').findall('tab')]
+        return [
+            Tab(e.attrib["name"], e.attrib["path"])
+            for e in PossiblyMissingElement(self.element)
+            .possibly_missing_child("tabs")
+            .findall("tab")
+        ]
 
     def ensure_tab(self, tab):
         tab_ensurance = Ensurance(self.element).ensure_child("tabs")
@@ -149,7 +163,12 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
 
     @property
     def tasks(self):
-        return [Task(e) for e in PossiblyMissingElement(self.element).possibly_missing_child("tasks").iterator]
+        return [
+            Task(e)
+            for e in PossiblyMissingElement(self.element)
+            .possibly_missing_child("tasks")
+            .iterator
+        ]
 
     def add_task(self, task):
         return task.append_to(self.element)
@@ -161,7 +180,9 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
             return task
 
     def without_any_tasks(self):
-        PossiblyMissingElement(self.element).possibly_missing_child("tasks").remove_all_children()
+        PossiblyMissingElement(self.element).possibly_missing_child(
+            "tasks"
+        ).remove_all_children()
         return self
 
     def reorder_elements_to_please_go(self):
@@ -179,10 +200,10 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
             if len(self.artifacts) > 1:
                 artifacts_sorted = list(self.artifacts)
                 artifacts_sorted.sort(key=lambda artifact: str(artifact))
-                result += '.ensure_artifacts(set(%s))' % artifacts_sorted
+                result += ".ensure_artifacts(set(%s))" % artifacts_sorted
             else:
-                artifact, = self.artifacts
-                result += '.ensure_artifacts({%s})' % artifact
+                (artifact,) = self.artifacts
+                result += ".ensure_artifacts({%s})" % artifact
 
         result += self.as_python()
 
@@ -190,13 +211,13 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
             result += '.ensure_resource("%s")' % resource
 
         for tab in self.tabs:
-            result += '.ensure_tab(%s)' % tab
+            result += ".ensure_tab(%s)" % tab
 
         if self.has_timeout:
             result += '.set_timeout("%s")' % self.timeout
 
         if self.runs_on_all_agents:
-            result += '.set_runs_on_all_agents()'
+            result += ".set_runs_on_all_agents()"
 
         if self.has_elastic_profile_id:
             result += '.set_elastic_profile_id("%s")' % self.elastic_profile_id
@@ -214,48 +235,68 @@ class Stage(CommonEqualityMixin, EnvironmentVariableMixin):
         self.parent_pipeline = parent_pipeline
 
     def __repr__(self):
-        return 'Stage(%s)' % self.name()
+        return "Stage(%s)" % self.name()
 
     @property
     def name(self):
-        return self.element.attrib['name']
+        return self.element.attrib["name"]
 
     @property
     def jobs(self):
-        job_elements = PossiblyMissingElement(self.element).possibly_missing_child('jobs').findall('job')
+        job_elements = (
+            PossiblyMissingElement(self.element)
+            .possibly_missing_child("jobs")
+            .findall("job")
+        )
         return [Job(job_element, self) for job_element in job_elements]
 
     def ensure_job(self, name):
-        job_element = Ensurance(self.element).ensure_child("jobs").ensure_child_with_attribute("job", "name", name)
+        job_element = (
+            Ensurance(self.element)
+            .ensure_child("jobs")
+            .ensure_child_with_attribute("job", "name", name)
+        )
         return Job(job_element.element, self)
 
     def set_clean_working_dir(self):
-        self.element.attrib['cleanWorkingDir'] = "true"
+        self.element.attrib["cleanWorkingDir"] = "true"
         return self
 
     @property
     def clean_working_dir(self):
-        return PossiblyMissingElement(self.element).has_attribute('cleanWorkingDir', "true")
+        return PossiblyMissingElement(self.element).has_attribute(
+            "cleanWorkingDir", "true"
+        )
 
     @property
     def has_manual_approval(self):
-        return PossiblyMissingElement(self.element).possibly_missing_child("approval").has_attribute("type", "manual")
+        return (
+            PossiblyMissingElement(self.element)
+            .possibly_missing_child("approval")
+            .has_attribute("type", "manual")
+        )
 
     @property
     def fetch_materials(self):
-        return not PossiblyMissingElement(self.element).has_attribute("fetchMaterials", "false")
+        return not PossiblyMissingElement(self.element).has_attribute(
+            "fetchMaterials", "false"
+        )
 
     @property
     def _approval_authorization(self):
-        return PossiblyMissingElement(self.element).possibly_missing_child('approval').possibly_missing_child('authorization')
+        return (
+            PossiblyMissingElement(self.element)
+            .possibly_missing_child("approval")
+            .possibly_missing_child("authorization")
+        )
 
     @property
     def authorized_users(self):
-        return [u.text for u in self._approval_authorization.findall('user')]
+        return [u.text for u in self._approval_authorization.findall("user")]
 
     @property
     def authorized_roles(self):
-        return [r.text for r in self._approval_authorization.findall('role')]
+        return [r.text for r in self._approval_authorization.findall("role")]
 
     @fetch_materials.setter
     def fetch_materials(self, value):
@@ -269,14 +310,20 @@ class Stage(CommonEqualityMixin, EnvironmentVariableMixin):
         return self
 
     def set_has_manual_approval(self, authorize_users=None, authorize_roles=None):
-        approval_element = Ensurance(self.element).ensure_child_with_attribute("approval", "type", "manual").element
+        approval_element = (
+            Ensurance(self.element)
+            .ensure_child_with_attribute("approval", "type", "manual")
+            .element
+        )
         if authorize_users or authorize_roles:
-            auth_element = Ensurance(approval_element).ensure_child('authorization').element
+            auth_element = (
+                Ensurance(approval_element).ensure_child("authorization").element
+            )
             PossiblyMissingElement(auth_element).remove_all_children()
-            for user in (authorize_users or []):
-                auth_element.append(ET.fromstring('<user>{}</user>'.format(user)))
-            for role in (authorize_roles or []):
-                auth_element.append(ET.fromstring('<role>{}</role>'.format(role)))
+            for user in authorize_users or []:
+                auth_element.append(ET.fromstring("<user>{}</user>".format(user)))
+            for role in authorize_roles or []:
+                auth_element.append(ET.fromstring("<role>{}</role>".format(role)))
 
         return self
 
@@ -293,16 +340,16 @@ class Stage(CommonEqualityMixin, EnvironmentVariableMixin):
         result += self.as_python()
 
         if self.clean_working_dir:
-            result += '.set_clean_working_dir()'
+            result += ".set_clean_working_dir()"
 
         if self.has_manual_approval:
-            result += '.set_has_manual_approval()'
+            result += ".set_has_manual_approval()"
 
         if not self.fetch_materials:
-            result += '.set_fetch_materials(False)'
+            result += ".set_fetch_materials(False)"
 
         for job in self.jobs:
-            result += '\n%s' % job.as_python_commands_applied_to_stage()
+            result += "\n%s" % job.as_python_commands_applied_to_stage()
 
         return result
 
@@ -314,20 +361,28 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
     @property
     def name(self):
-        return self.element.attrib['name']
+        return self.element.attrib["name"]
 
     def as_python_commands_applied_to_server(self):
         result = (
-                     then('ensure_pipeline_group("%s")') +
-                     then('ensure_replacement_of_pipeline("%s")')
-                 ) % (self.parent.name, self.name)
-        return self.__appended_python_commands_to_create_pipeline_or_template_applied_to_configurator(result, 'pipeline')
+            then('ensure_pipeline_group("%s")')
+            + then('ensure_replacement_of_pipeline("%s")')
+        ) % (self.parent.name, self.name)
+        return self.__appended_python_commands_to_create_pipeline_or_template_applied_to_configurator(
+            result, "pipeline"
+        )
 
     def __as_python_commands_to_create_template_applied_to_configurator(self):
-        result = 'template = configurator.ensure_replacement_of_template("%s")' % self.name
-        return self.__appended_python_commands_to_create_pipeline_or_template_applied_to_configurator(result, 'template')
+        result = (
+            'template = configurator.ensure_replacement_of_template("%s")' % self.name
+        )
+        return self.__appended_python_commands_to_create_pipeline_or_template_applied_to_configurator(
+            result, "template"
+        )
 
-    def __appended_python_commands_to_create_pipeline_or_template_applied_to_configurator(self, result, receiver):
+    def __appended_python_commands_to_create_pipeline_or_template_applied_to_configurator(
+        self, result, receiver
+    ):
         if self.is_based_on_template:
             result += then('set_template_name("%s")' % self.__template_name)
 
@@ -339,12 +394,12 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
         if self.has_label_template:
             if self.label_template == DEFAULT_LABEL_TEMPLATE:
-                result += then('set_default_label_template()')
+                result += then("set_default_label_template()")
             else:
                 result += then('set_label_template("%s")' % self.label_template)
 
         if self.has_automatic_pipeline_locking:
-            result += then('set_automatic_pipeline_locking()')
+            result += then("set_automatic_pipeline_locking()")
 
         if self.has_lock_behavior:
             result += then('set_lock_behavior("%s")' % self.lock_behavior)
@@ -354,15 +409,18 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
         for material in self.materials:
             if not (self.has_single_git_material and material.is_git):
-                result += then('ensure_material(%s)' % material)
+                result += then("ensure_material(%s)" % material)
 
         result += self.as_python()
 
         if len(self.parameters) != 0:
-            result += then('ensure_parameters(%s)' % self.parameters)
+            result += then("ensure_parameters(%s)" % self.parameters)
 
         if self.is_based_on_template:
-            result += "\n" + self.template.__as_python_commands_to_create_template_applied_to_configurator()
+            result += (
+                "\n"
+                + self.template.__as_python_commands_to_create_template_applied_to_configurator()
+            )
 
         for stage in self.stages:
             result += "\n" + stage.as_python_commands_applied_to(receiver)
@@ -371,36 +429,46 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
     @property
     def is_template(self):
-        return self.parent == 'templates'  # but for a pipeline, parent is the pipeline group
+        return (
+            self.parent == "templates"
+        )  # but for a pipeline, parent is the pipeline group
 
     def __eq__(self, other):
-        return isinstance(other, self.__class__) and ET.tostring(self.element, 'utf-8') == ET.tostring(other.element, 'utf-8') and self.parent == other.parent
+        return (
+            isinstance(other, self.__class__)
+            and ET.tostring(self.element, "utf-8")
+            == ET.tostring(other.element, "utf-8")
+            and self.parent == other.parent
+        )
 
     def __repr__(self):
         return 'Pipeline("%s", "%s")' % (self.name, self.parent)
 
     def set_automatic_pipeline_locking(self):
-        self.element.attrib['isLocked'] = 'true'
+        self.element.attrib["isLocked"] = "true"
         return self
 
     @property
     def has_automatic_pipeline_locking(self):
-        return 'isLocked' in self.element.attrib and self.element.attrib['isLocked'] == 'true'
+        return (
+            "isLocked" in self.element.attrib
+            and self.element.attrib["isLocked"] == "true"
+        )
 
     @property
     def has_lock_behavior(self):
-        return 'lockBehavior' in self.element.attrib
+        return "lockBehavior" in self.element.attrib
 
     @property
     def lock_behavior(self):
         if self.has_lock_behavior:
-            return self.element.attrib['lockBehavior']
+            return self.element.attrib["lockBehavior"]
         else:
             raise RuntimeError("Does not have a lock behavior")
 
     @lock_behavior.setter
     def lock_behavior(self, lock_behavior):
-        self.element.attrib['lockBehavior'] = lock_behavior
+        self.element.attrib["lockBehavior"] = lock_behavior
 
     def set_lock_behavior(self, lock_behavior):
         self.lock_behavior = lock_behavior
@@ -408,18 +476,18 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
     @property
     def has_label_template(self):
-        return 'labeltemplate' in self.element.attrib
+        return "labeltemplate" in self.element.attrib
 
     @property
     def label_template(self):
         if self.has_label_template:
-            return self.element.attrib['labeltemplate']
+            return self.element.attrib["labeltemplate"]
         else:
             raise RuntimeError("Does not have a label template")
 
     @label_template.setter
     def label_template(self, label_template):
-        self.element.attrib['labeltemplate'] = label_template
+        self.element.attrib["labeltemplate"] = label_template
 
     def set_label_template(self, label_template):
         self.label_template = label_template
@@ -431,11 +499,11 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
     @property
     def __template_name(self):
-        return self.element.attrib.get('template', None)
+        return self.element.attrib.get("template", None)
 
     @__template_name.setter
     def __template_name(self, template_name):
-        self.element.attrib['template'] = template_name
+        self.element.attrib["template"] = template_name
 
     def set_template_name(self, template_name):
         self.__template_name = template_name
@@ -443,11 +511,15 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
     @property
     def materials(self):
-        elements = PossiblyMissingElement(self.element).possibly_missing_child('materials').iterator
+        elements = (
+            PossiblyMissingElement(self.element)
+            .possibly_missing_child("materials")
+            .iterator
+        )
         return [Materials(element) for element in elements]
 
     def __add_material(self, material):
-        material.append_to(Ensurance(self.element).ensure_child('materials'))
+        material.append_to(Ensurance(self.element).ensure_child("materials"))
 
     def ensure_material(self, material):
         if self.materials.count(material) == 0:
@@ -499,8 +571,12 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
     def set_package_material(self, package_material):
         if len(self.package_materials) > 1:
-            raise RuntimeError('Cannot set package ref for pipeline that already has multiple package materials. Use "ensure_material(PackageMaterial(..." instead')
-        PossiblyMissingElement(self.element).possibly_missing_child('materials').remove_all_children('package')
+            raise RuntimeError(
+                'Cannot set package ref for pipeline that already has multiple package materials. Use "ensure_material(PackageMaterial(..." instead'
+            )
+        PossiblyMissingElement(self.element).possibly_missing_child(
+            "materials"
+        ).remove_all_children("package")
         self.__add_material(package_material)
         return self
 
@@ -517,8 +593,12 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
     def set_git_material(self, git_material):
         if len(self.git_materials) > 1:
-            raise RuntimeError('Cannot set git url for pipeline that already has multiple git materials. Use "ensure_material(GitMaterial(..." instead')
-        PossiblyMissingElement(self.element).possibly_missing_child('materials').remove_all_children('git')
+            raise RuntimeError(
+                'Cannot set git url for pipeline that already has multiple git materials. Use "ensure_material(GitMaterial(..." instead'
+            )
+        PossiblyMissingElement(self.element).possibly_missing_child(
+            "materials"
+        ).remove_all_children("git")
         self.__add_material(git_material)
         return self
 
@@ -528,32 +608,49 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
     @property
     def template(self):
-        return next(template for template in self.parent.templates if template.name == self.__template_name)
+        return next(
+            template
+            for template in self.parent.templates
+            if template.name == self.__template_name
+        )
 
     @property
     def parameters(self):
-        param_elements = PossiblyMissingElement(self.element).possibly_missing_child("params").findall("param")
+        param_elements = (
+            PossiblyMissingElement(self.element)
+            .possibly_missing_child("params")
+            .findall("param")
+        )
         result = {}
         for param_element in param_elements:
-            result[param_element.attrib['name']] = param_element.text
+            result[param_element.attrib["name"]] = param_element.text
         return result
 
     def ensure_parameters(self, parameters):
         parameters_ensurance = Ensurance(self.element).ensure_child("params")
         for key, value in parameters.items():
-            parameters_ensurance.ensure_child_with_attribute("param", "name", key).set_text(value)
+            parameters_ensurance.ensure_child_with_attribute(
+                "param", "name", key
+            ).set_text(value)
         return self
 
     def without_any_parameters(self):
-        PossiblyMissingElement(self.element).possibly_missing_child("params").remove_all_children()
+        PossiblyMissingElement(self.element).possibly_missing_child(
+            "params"
+        ).remove_all_children()
         return self
 
     @property
     def stages(self):
-        return [Stage(stage_element, self) for stage_element in self.element.findall('stage')]
+        return [
+            Stage(stage_element, self)
+            for stage_element in self.element.findall("stage")
+        ]
 
     def ensure_stage(self, name):
-        stage_element = Ensurance(self.element).ensure_child_with_attribute("stage", "name", name)
+        stage_element = Ensurance(self.element).ensure_child_with_attribute(
+            "stage", "name", name
+        )
         return Stage(stage_element.element, self)
 
     def ensure_removal_of_stage(self, name):
@@ -564,8 +661,8 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
 
     def ensure_initial_stage(self, name):
         stage = self.ensure_stage(name)
-        for stage_element in self.element.findall('stage'):
-            if stage_element.attrib['name'] != name:
+        for stage_element in self.element.findall("stage"):
+            if stage_element.attrib["name"] != name:
                 self.element.remove(stage_element)
                 self.element.append(stage_element)
         return stage
@@ -588,35 +685,39 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
     @property
     def timer(self):
         if self.has_timer:
-            return self.element.find('timer').text
+            return self.element.find("timer").text
         else:
             raise RuntimeError("%s has no timer" % self)
 
     @property
     def has_timer(self):
-        return self.element.find('timer') is not None
+        return self.element.find("timer") is not None
 
     def set_timer(self, timer, only_on_changes=False):
         if only_on_changes:
-            Ensurance(self.element).ensure_child_with_attribute('timer', 'onlyOnChanges', 'true').set_text(timer)
+            Ensurance(self.element).ensure_child_with_attribute(
+                "timer", "onlyOnChanges", "true"
+            ).set_text(timer)
         else:
-            Ensurance(self.element).ensure_child('timer').set_text(timer)
+            Ensurance(self.element).ensure_child("timer").set_text(timer)
         return self
 
     def remove_timer(self):
-        PossiblyMissingElement(self.element).remove_all_children('timer')
+        PossiblyMissingElement(self.element).remove_all_children("timer")
         return self
 
     def make_empty(self):
-        PossiblyMissingElement(self.element).remove_all_children().remove_attribute('labeltemplate')
+        PossiblyMissingElement(self.element).remove_all_children().remove_attribute(
+            "labeltemplate"
+        )
 
     @property
     def timer_triggers_only_on_changes(self):
-        element = self.element.find('timer')
-        return "true" == element.attrib.get('onlyOnChanges')
+        element = self.element.find("timer")
+        return "true" == element.attrib.get("onlyOnChanges")
 
     def remove_materials(self):
-        PossiblyMissingElement(self.element).remove_all_children('materials')
+        PossiblyMissingElement(self.element).remove_all_children("materials")
 
     @staticmethod
     def __reordered_materials_to_reduce_thrash(materials):
@@ -648,7 +749,7 @@ class PipelineGroup(CommonEqualityMixin):
 
     @property
     def name(self):
-        return self.element.attrib['group']
+        return self.element.attrib["group"]
 
     @property
     def templates(self):
@@ -656,14 +757,14 @@ class PipelineGroup(CommonEqualityMixin):
 
     @property
     def authorization(self):
-        return Authorization(self.element.find('authorization'))
+        return Authorization(self.element.find("authorization"))
 
     @property
     def pipelines(self):
-        return [Pipeline(e, self) for e in self.element.findall('pipeline')]
+        return [Pipeline(e, self) for e in self.element.findall("pipeline")]
 
     def reorder_elements_to_please_go(self):
-        move_all_to_end(self.element, 'pipeline')
+        move_all_to_end(self.element, "pipeline")
 
     def _matching_pipelines(self, name):
         return [p for p in self.pipelines if p.name == name]
@@ -675,10 +776,14 @@ class PipelineGroup(CommonEqualityMixin):
         if self.has_pipeline(name):
             return self._matching_pipelines(name)[0]
         else:
-            raise RuntimeError('Cannot find pipeline with name "%s" in %s' % (name, self.pipelines))
+            raise RuntimeError(
+                'Cannot find pipeline with name "%s" in %s' % (name, self.pipelines)
+            )
 
     def ensure_authorization(self):
-        authorization_element = Ensurance(self.element).ensure_child('authorization').element
+        authorization_element = (
+            Ensurance(self.element).ensure_child("authorization").element
+        )
         return Authorization(authorization_element)
 
     def ensure_replacement_of_authorization(self):
@@ -687,7 +792,11 @@ class PipelineGroup(CommonEqualityMixin):
         return authorization
 
     def ensure_pipeline(self, name):
-        pipeline_element = Ensurance(self.element).ensure_child_with_attribute('pipeline', 'name', name).element
+        pipeline_element = (
+            Ensurance(self.element)
+            .ensure_child_with_attribute("pipeline", "name", name)
+            .element
+        )
         return Pipeline(pipeline_element, self)
 
     def ensure_removal_of_pipeline(self, name):
@@ -702,4 +811,4 @@ class PipelineGroup(CommonEqualityMixin):
 
 
 def then(s):
-    return '\\\n\t.' + s
+    return "\\\n\t." + s
