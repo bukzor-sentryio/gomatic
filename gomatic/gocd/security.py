@@ -106,7 +106,7 @@ class AuthConfig(CommonEqualityMixin):
     @property
     def auth_config_id(self):
         return self.element.get('id')
-    
+
     @property
     def plugin_id(self):
         return self.element.get('pluginId')

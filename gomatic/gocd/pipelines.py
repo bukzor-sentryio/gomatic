@@ -86,21 +86,21 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
 
     @property
     def has_run_instance_count(self):
-        return 'runInstanceCount' in self.element.attrib        
+        return 'runInstanceCount' in self.element.attrib
 
     @property
-    def run_instance_count(self):            
+    def run_instance_count(self):
         if not self.has_run_instance_count:
             raise RuntimeError("Job (%s) does not have runInstanceCount" % self)
         return self.element.attrib['runInstanceCount']
 
     @run_instance_count.setter
     def run_instance_count(self, run_instance_count):
-        self.element.attrib['runInstanceCount'] = run_instance_count       
+        self.element.attrib['runInstanceCount'] = run_instance_count
 
     def set_run_instance_count(self, run_instance_count):
         self.run_instance_count = run_instance_count
-        return self         
+        return self
 
     def __get_gocd_version_string(self):
         if self.parent_stage is not None \
