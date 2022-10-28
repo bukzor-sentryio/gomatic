@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import os
 import unittest
 import xml.etree.ElementTree as ET
@@ -2106,7 +2105,7 @@ class TestGoCdConfigurator(unittest.TestCase):
             "empty_config()",
         )
         configurator = GoCdConfigurator(empty_config)
-        self.assertEqual(1, configurator.config.count('schemaVersion="73"'.encode()))
+        self.assertEqual(1, configurator.config.count(b'schemaVersion="73"'))
 
     def test_can_find_out_server_settings(self):
         configurator = GoCdConfigurator(config("config-with-server-settings"))

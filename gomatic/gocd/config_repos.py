@@ -63,7 +63,7 @@ class ConfigRepo(CommonEqualityMixin):
         PossiblyMissingElement(self.element).remove_all_children()
 
     def __repr__(self):
-        return "ConfigRepo(url={0}, plugin={1}, cvs={2}, configuration={3})".format(
+        return "ConfigRepo(url={}, plugin={}, cvs={}, configuration={})".format(
             self.url, self.plugin, self.cvs, self.configuration
         )
 
@@ -93,13 +93,13 @@ class ConfigRepos(CommonEqualityMixin):
         if configuration:
             configuration_xml_string = "<configuration>{}</configuration>".format(
                 "".join(
-                    "<property><key>{0}</key><value>{1}</value></property>".format(k, v)
+                    f"<property><key>{k}</key><value>{v}</value></property>"
                     for k, v in configuration.items()
                 )
             )
         branch_entry = ""
         if branch:
-            branch_entry = ' branch="{}"'.format(branch)
+            branch_entry = f' branch="{branch}"'
         if has_id(self.__configurator.server_version):
             if not repo_id:
                 repo_id = str(uuid.uuid4())

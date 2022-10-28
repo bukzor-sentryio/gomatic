@@ -23,11 +23,11 @@ class Tab(CommonEqualityMixin):
         self.__path = path
 
     def __repr__(self):
-        return 'Tab("%s", "%s")' % (self.__name, self.__path)
+        return 'Tab("{}", "{}")'.format(self.__name, self.__path)
 
     def append_to(self, element):
         element.append(
-            ET.fromstring('<tab name="%s" path="%s" />' % (self.__name, self.__path))
+            ET.fromstring('<tab name="{}" path="{}" />'.format(self.__name, self.__path))
         )
 
 
@@ -37,7 +37,7 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
         self.parent_stage = parent_stage
 
     def __repr__(self):
-        return "Job('%s', %s)" % (self.name, self.tasks)
+        return "Job('{}', {})".format(self.name, self.tasks)
 
     @property
     def name(self):
@@ -136,7 +136,7 @@ class Job(CommonEqualityMixin, EnvironmentVariableMixin, ResourceMixin):
             .possibly_missing_child("artifacts")
             .iterator
         )
-        return set([Artifact.get_artifact_for(e) for e in artifact_elements])
+        return {Artifact.get_artifact_for(e) for e in artifact_elements}
 
     def ensure_artifacts(self, artifacts):
         if artifacts:
@@ -321,9 +321,9 @@ class Stage(CommonEqualityMixin, EnvironmentVariableMixin):
             )
             PossiblyMissingElement(auth_element).remove_all_children()
             for user in authorize_users or []:
-                auth_element.append(ET.fromstring("<user>{}</user>".format(user)))
+                auth_element.append(ET.fromstring(f"<user>{user}</user>"))
             for role in authorize_roles or []:
-                auth_element.append(ET.fromstring("<role>{}</role>".format(role)))
+                auth_element.append(ET.fromstring(f"<role>{role}</role>"))
 
         return self
 
@@ -335,7 +335,7 @@ class Stage(CommonEqualityMixin, EnvironmentVariableMixin):
             job.reorder_elements_to_please_go()
 
     def as_python_commands_applied_to(self, receiver):
-        result = 'stage = %s.ensure_stage("%s")' % (receiver, self.name)
+        result = 'stage = {}.ensure_stage("{}")'.format(receiver, self.name)
 
         result += self.as_python()
 
@@ -442,7 +442,7 @@ class Pipeline(CommonEqualityMixin, EnvironmentVariableMixin):
         )
 
     def __repr__(self):
-        return 'Pipeline("%s", "%s")' % (self.name, self.parent)
+        return 'Pipeline("{}", "{}")'.format(self.name, self.parent)
 
     def set_automatic_pipeline_locking(self):
         self.element.attrib["isLocked"] = "true"
@@ -777,7 +777,7 @@ class PipelineGroup(CommonEqualityMixin):
             return self._matching_pipelines(name)[0]
         else:
             raise RuntimeError(
-                'Cannot find pipeline with name "%s" in %s' % (name, self.pipelines)
+                'Cannot find pipeline with name "{}" in {}'.format(name, self.pipelines)
             )
 
     def ensure_authorization(self):

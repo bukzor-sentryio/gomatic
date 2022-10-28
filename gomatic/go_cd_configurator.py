@@ -24,7 +24,7 @@ from gomatic.xml_operations import PossiblyMissingElement
 from gomatic.xml_operations import prettify
 
 
-class GoCdConfigurator(object):
+class GoCdConfigurator:
     def __init__(self, host_rest_client):
         self.__host_rest_client = host_rest_client
         self.__set_initial_config_xml()
@@ -390,7 +390,7 @@ class GoCdConfigurator(object):
             self.__set_initial_config_xml()
 
 
-class HostRestClient(object):
+class HostRestClient:
     def __init__(
         self,
         host,
@@ -408,11 +408,11 @@ class HostRestClient(object):
         self.__access_token = access_token
 
     def __repr__(self):
-        return 'HostRestClient("{0}", ssl={1})'.format(self.__host, self.__ssl)
+        return f'HostRestClient("{self.__host}", ssl={self.__ssl})'
 
     def __path(self, path):
         http_prefix = "https://" if self.__ssl else "http://"
-        return "{0}{1}{2}".format(http_prefix, self.__host, path)
+        return f"{http_prefix}{self.__host}{path}"
 
     def __auth(self):
         return (

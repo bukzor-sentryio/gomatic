@@ -10,7 +10,7 @@ empty_config_xml = """<?xml version="1.0" encoding="utf-8"?>
 DEFAULT_VERSION = "16.3.0"
 
 
-class FakeResponse(object):
+class FakeResponse:
     def __init__(self, text):
         self.text = text
         self.headers = {"x-cruise-config-md5": "42"}
@@ -20,7 +20,7 @@ class FakeResponse(object):
         return json.loads(self.text)
 
 
-class FakeHostRestClient(object):
+class FakeHostRestClient:
     def __init__(
         self, config_string, thing_to_recreate_itself=None, version=DEFAULT_VERSION
     ):
@@ -41,7 +41,7 @@ class FakeHostRestClient(object):
         if path == "/go/api/admin/config.xml":
             return FakeResponse(self.config_string)
         if path == "/go/api/version":
-            return FakeResponse('{{"version": "{}"}}'.format(self.version))
+            return FakeResponse(f'{{"version": "{self.version}"}}')
         raise RuntimeError("not expecting to be asked for anything else")
 
 

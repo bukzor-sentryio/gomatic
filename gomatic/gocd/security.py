@@ -43,7 +43,7 @@ class Admins(CommonEqualityMixin):
         self.element = element
 
     def add_user(self, name):
-        user_xml = "<user>{}</user>".format(name)
+        user_xml = f"<user>{name}</user>"
         user_element = ET.fromstring(user_xml)
         self.element.append(user_element)
         return self
@@ -68,8 +68,8 @@ class Roles(CommonEqualityMixin):
         PossiblyMissingElement(self.element).remove_all_children()
 
     def ensure_role(self, name, users):
-        users_xml = "".join(["<user>{}</user>".format(user) for user in users])
-        role_xml = '<role name="{}"><users>{}</users></role>'.format(name, users_xml)
+        users_xml = "".join([f"<user>{user}</user>" for user in users])
+        role_xml = f'<role name="{name}"><users>{users_xml}</users></role>'
         role_element = ET.fromstring(role_xml)
         self.element.append(role_element)
         return self
@@ -77,12 +77,12 @@ class Roles(CommonEqualityMixin):
     def ensure_plugin_role(self, name, auth_config_id, properties={}):
         properties_xml = "".join(
             [
-                "<property><key>{0}</key><value>{1}</value></property>".format(k, v)
+                f"<property><key>{k}</key><value>{v}</value></property>"
                 for k, v in properties.items()
             ]
         )
         plugin_role_xml = (
-            '<pluginRole name="{0}" authConfigId="{1}">{2}</pluginRole>'.format(
+            '<pluginRole name="{}" authConfigId="{}">{}</pluginRole>'.format(
                 name, auth_config_id, properties_xml
             )
         )
@@ -94,7 +94,7 @@ class Roles(CommonEqualityMixin):
     def __getitem__(self, index):
         if not isinstance(index, int):
             raise Exception(
-                "Roles index must be an integer, got {}".format(type(index))
+                f"Roles index must be an integer, got {type(index)}"
             )
         return self.role[index]
 
@@ -136,7 +136,7 @@ class AuthConfigs(CommonEqualityMixin):
     def ensure_auth_config(self, auth_config_id, plugin_id, properties):
         properties_xml = "".join(
             [
-                "<property><key>{}</key><value>{}</value></property>".format(k, v)
+                f"<property><key>{k}</key><value>{v}</value></property>"
                 for k, v in properties.items()
             ]
         )
@@ -162,7 +162,7 @@ class AuthConfigs(CommonEqualityMixin):
     def __getitem__(self, index):
         if not isinstance(index, int):
             raise Exception(
-                "AuthConfig index must be an integer, got {}".format(type(index))
+                f"AuthConfig index must be an integer, got {type(index)}"
             )
         return self.auth_config[index]
 

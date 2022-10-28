@@ -67,7 +67,7 @@ class ArtifactStores(CommonEqualityMixin):
     def __getitem__(self, index):
         if not isinstance(index, int):
             raise Exception(
-                "ArtifactStores index must be an integer, got {}".format(type(index))
+                f"ArtifactStores index must be an integer, got {type(index)}"
             )
         return self.artifact_store[index]
 

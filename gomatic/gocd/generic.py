@@ -5,18 +5,16 @@ from gomatic.xml_operations import Ensurance
 from gomatic.xml_operations import PossiblyMissingElement
 
 
-class ResourceMixin(object):
+class ResourceMixin:
     @property
     def resources(self):
         guarded_element = PossiblyMissingElement(self.element)
-        return set(
-            [
+        return {
                 e.text
                 for e in guarded_element.possibly_missing_child("resources").findall(
                     "resource"
                 )
-            ]
-        )
+        }
 
     def ensure_resource(self, resource):
         if resource not in self.resources:
@@ -26,7 +24,7 @@ class ResourceMixin(object):
         return self
 
 
-class EnvironmentVariableMixin(object):
+class EnvironmentVariableMixin:
     """
     Mixin to add to pipelines, stages, and jobs to provide environment variable functionality.
     """

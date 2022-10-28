@@ -65,22 +65,22 @@ class Artifact(CommonEqualityMixin):
     def __repr__(self):
         if self._artifact_id is not None:
             if self._config is None:
-                return '%s("%s", "%s")' % (
+                return '{}("{}", "{}")'.format(
                     self.constructor,
                     self._artifact_id,
                     self._store_id,
                 )
             else:
-                return '%s("%s", "%s", %s)' % (
+                return '{}("{}", "{}", {})'.format(
                     self.constructor,
                     self._artifact_id,
                     self._store_id,
                     self._config,
                 )
         if self._dest is None:
-            return '%s("%s")' % (self.constructor, self._src)
+            return '{}("{}")'.format(self.constructor, self._src)
         else:
-            return '%s("%s", "%s")' % (self.constructor, self._src, self._dest)
+            return '{}("{}", "{}")'.format(self.constructor, self._src, self._dest)
 
     @property
     def constructor(self):
@@ -125,7 +125,7 @@ class Artifact(CommonEqualityMixin):
         elif self._dest is None:
             element.append(
                 ET.fromstring(
-                    '<artifact src="%s" type="%s" />' % (self._src, self._type)
+                    '<artifact src="{}" type="{}" />'.format(self._src, self._type)
                 )
             )
         else:
@@ -143,11 +143,11 @@ class Artifact(CommonEqualityMixin):
             )
         tag = "artifact" if self._type == "build" else "test"
         if self._dest is None:
-            element.append(ET.fromstring('<%s src="%s" />' % (tag, self._src)))
+            element.append(ET.fromstring('<{} src="{}" />'.format(tag, self._src)))
         else:
             element.append(
                 ET.fromstring(
-                    '<%s src="%s" dest="%s" />' % (tag, self._src, self._dest)
+                    '<{} src="{}" dest="{}" />'.format(tag, self._src, self._dest)
                 )
             )
 

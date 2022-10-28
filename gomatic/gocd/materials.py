@@ -207,12 +207,12 @@ class PipelineMaterial(CommonEqualityMixin):
 
     def __repr__(self):
         if self.__material_name is None:
-            return 'PipelineMaterial("%s", "%s")' % (
+            return 'PipelineMaterial("{}", "{}")'.format(
                 self.__pipeline_name,
                 self.__stage_name,
             )
         else:
-            return 'PipelineMaterial("%s", "%s", "%s")' % (
+            return 'PipelineMaterial("{}", "{}", "{}")'.format(
                 self.__pipeline_name,
                 self.__stage_name,
                 self.__material_name,

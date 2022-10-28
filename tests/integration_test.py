@@ -38,7 +38,7 @@ def start_go_server(gocd_version, gocd_download_version_string, gocd_port):
     count = 0
     for attempt in range(300):
         try:
-            urlopen("http://localhost:{}/go".format(gocd_port)).read()
+            urlopen(f"http://localhost:{gocd_port}/go").read()
             return
         except:
             count += 1
@@ -49,7 +49,7 @@ def start_go_server(gocd_version, gocd_download_version_string, gocd_port):
     raise Exception("Failed to connect to gocd. It didn't start up correctly in time")
 
 
-class populated_go_server(object):
+class populated_go_server:
     def __init__(self, gocd_version, gocd_download_version_string):
         self.gocd_version = gocd_version
         self.gocd_download_version_string = gocd_download_version_string
@@ -62,7 +62,7 @@ class populated_go_server(object):
             )
 
             configurator = GoCdConfigurator(
-                HostRestClient("localhost:{}".format(self.gocd_port))
+                HostRestClient(f"localhost:{self.gocd_port}")
             )
             pipeline = (
                 configurator.ensure_pipeline_group("P.Group")
@@ -96,7 +96,7 @@ class populated_go_server(object):
 
             configurator.save_updated_config(save_config_locally=True)
             return GoCdConfigurator(
-                HostRestClient("localhost:{}".format(self.gocd_port))
+                HostRestClient(f"localhost:{self.gocd_port}")
             )
         except:
             # Swallow exception if __exit__ returns a True value
@@ -194,16 +194,16 @@ class IntegrationTest(unittest.TestCase):
                 with populated_go_server(
                     gocd_version, gocd_download_version_string
                 ) as configurator:
-                    self.assertEquals(
+                    self.assertEqual(
                         ["P.Group"], [p.name for p in configurator.pipeline_groups]
                     )
-                    self.assertEquals(
+                    self.assertEqual(
                         ["more-options"],
                         [p.name for p in configurator.pipeline_groups[0].pipelines],
                     )
                     pipeline = configurator.pipeline_groups[0].pipelines[0]
-                    self.assertEquals("0 15 22 * * ?", pipeline.timer)
-                    self.assertEquals(
+                    self.assertEqual("0 15 22 * * ?", pipeline.timer)
+                    self.assertEqual(
                         GitMaterial(
                             "https://github.com/SpringerSBM/gomatic.git",
                             material_name="some-material-name",
@@ -211,17 +211,17 @@ class IntegrationTest(unittest.TestCase):
                         ),
                         pipeline.git_material,
                     )
-                    self.assertEquals(
+                    self.assertEqual(
                         {"JAVA_HOME": "/opt/java/jdk-1.7"},
                         pipeline.environment_variables,
                     )
-                    self.assertEquals({"environment": "qa"}, pipeline.parameters)
-                    self.assertEquals(["earlyStage"], [s.name for s in pipeline.stages])
-                    self.assertEquals(
+                    self.assertEqual({"environment": "qa"}, pipeline.parameters)
+                    self.assertEqual(["earlyStage"], [s.name for s in pipeline.stages])
+                    self.assertEqual(
                         ["earlyWorm"], [j.name for j in pipeline.stages[0].jobs]
                     )
                     job = pipeline.stages[0].jobs[0]
-                    self.assertEquals(
+                    self.assertEqual(
                         {
                             Artifact.get_build_artifact("scripts/*", "files"),
                             Artifact.get_build_artifact(
@@ -231,8 +231,8 @@ class IntegrationTest(unittest.TestCase):
                         },
                         job.artifacts,
                     )
-                    self.assertEquals(True, job.runs_on_all_agents)
-                    self.assertEquals([ExecTask(["ls"])], job.tasks)
+                    self.assertEqual(True, job.runs_on_all_agents)
+                    self.assertEqual([ExecTask(["ls"])], job.tasks)
 
             p = multiprocessing.Process(
                 target=work, args=[gocd_version, gocd_download_version_string, self]
@@ -278,7 +278,7 @@ class IntegrationTest(unittest.TestCase):
 
             configurator.save_updated_config(save_config_locally=True, dry_run=False)
 
-            self.assertEquals(
+            self.assertEqual(
                 1,
                 len(
                     configurator.ensure_pipeline_group("Test")
@@ -286,7 +286,7 @@ class IntegrationTest(unittest.TestCase):
                     .stages
                 ),
             )
-            self.assertEquals(
+            self.assertEqual(
                 1,
                 len(
                     configurator.ensure_pipeline_group("Test")
@@ -316,7 +316,7 @@ class IntegrationTest(unittest.TestCase):
             job.ensure_task(ExecTask(["ls"]))
 
             configurator.save_updated_config(save_config_locally=True, dry_run=False)
-            self.assertEquals(
+            self.assertEqual(
                 1,
                 len(
                     configurator.ensure_pipeline_group("Test")
@@ -324,7 +324,7 @@ class IntegrationTest(unittest.TestCase):
                     .materials
                 ),
             )
-            self.assertEquals(
+            self.assertEqual(
                 package.id,
                 configurator.ensure_pipeline_group("Test")
                 .find_pipeline("new-package")

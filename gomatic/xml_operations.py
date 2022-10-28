@@ -2,7 +2,7 @@ from xml.dom.minidom import parseString
 from xml.etree import ElementTree as ET
 
 
-class Ensurance(object):
+class Ensurance:
     def __init__(self, element):
         assert element is not None
         self.element = element
@@ -10,7 +10,7 @@ class Ensurance(object):
     def ensure_child(self, name):
         child = self.element.find(name)
         if child is None:
-            result = ET.fromstring("<%s></%s>" % (name, name))
+            result = ET.fromstring("<{}></{}>".format(name, name))
             self.element.append(result)
             return Ensurance(result)
         else:
@@ -19,7 +19,7 @@ class Ensurance(object):
     def ensure_child_with_text(self, name, text):
         matching_elements = [e for e in self.element.findall(name) if e.text == text]
         if len(matching_elements) == 0:
-            new_element = ET.fromstring("<%s>%s</%s>" % (name, text, name))
+            new_element = ET.fromstring("<{}>{}</{}>".format(name, text, name))
             self.element.append(new_element)
             return Ensurance(new_element)
         else:
@@ -33,7 +33,7 @@ class Ensurance(object):
         ]
         if len(matching_elements) == 0:
             new_element = ET.fromstring(
-                '<%s %s="%s"></%s>' % (name, attribute_name, attribute_value, name)
+                '<{} {}="{}"></{}>'.format(name, attribute_name, attribute_value, name)
             )
             self.element.append(new_element)
             return Ensurance(new_element)
@@ -83,7 +83,7 @@ class Ensurance(object):
         self.element.text = value
 
 
-class PossiblyMissingElement(object):
+class PossiblyMissingElement:
     def __init__(self, element):
         self.__element = element
 
@@ -158,7 +158,7 @@ def ignore_patterns_in(element):
         .possibly_missing_child("filter")
         .findall("ignore")
     )
-    return set([e.attrib["pattern"] for e in children])
+    return {e.attrib["pattern"] for e in children}
 
 
 def prettify(xml_string):

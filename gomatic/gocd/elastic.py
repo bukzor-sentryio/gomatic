@@ -39,7 +39,7 @@ class Profiles(CommonEqualityMixin):
     def ensure_profile(self, profile_id, plugin_id, properties):
         properties_xml = "".join(
             [
-                "<property><key>{}</key><value>{}</value></property>".format(k, v)
+                f"<property><key>{k}</key><value>{v}</value></property>"
                 for k, v in properties.items()
             ]
         )
@@ -63,7 +63,7 @@ class Profiles(CommonEqualityMixin):
     def __getitem__(self, index):
         if not isinstance(index, int):
             raise Exception(
-                "Profiles index must be an integer, got {}".format(type(index))
+                f"Profiles index must be an integer, got {type(index)}"
             )
         return self.profile[index]
 
