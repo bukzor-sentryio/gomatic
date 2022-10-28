@@ -62,9 +62,7 @@ class Profiles(CommonEqualityMixin):
 
     def __getitem__(self, index):
         if not isinstance(index, int):
-            raise Exception(
-                f"Profiles index must be an integer, got {type(index)}"
-            )
+            raise Exception(f"Profiles index must be an integer, got {type(index)}")
         return self.profile[index]
 
     def __len__(self):

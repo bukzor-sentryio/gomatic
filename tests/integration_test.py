@@ -95,9 +95,7 @@ class populated_go_server:
             job.add_task(ExecTask(["ls"]))
 
             configurator.save_updated_config(save_config_locally=True)
-            return GoCdConfigurator(
-                HostRestClient(f"localhost:{self.gocd_port}")
-            )
+            return GoCdConfigurator(HostRestClient(f"localhost:{self.gocd_port}"))
         except:
             # Swallow exception if __exit__ returns a True value
             if self.__exit__(*sys.exc_info()):

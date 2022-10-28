@@ -124,9 +124,7 @@ class Artifact(CommonEqualityMixin):
                 element.append(new_element)
         elif self._dest is None:
             element.append(
-                ET.fromstring(
-                    f'<artifact src="{self._src}" type="{self._type}" />'
-                )
+                ET.fromstring(f'<artifact src="{self._src}" type="{self._type}" />')
             )
         else:
             element.append(
@@ -146,9 +144,7 @@ class Artifact(CommonEqualityMixin):
             element.append(ET.fromstring(f'<{tag} src="{self._src}" />'))
         else:
             element.append(
-                ET.fromstring(
-                    f'<{tag} src="{self._src}" dest="{self._dest}" />'
-                )
+                ET.fromstring(f'<{tag} src="{self._src}" dest="{self._dest}" />')
             )
 
     @classmethod

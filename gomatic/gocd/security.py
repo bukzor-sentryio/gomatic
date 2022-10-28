@@ -93,9 +93,7 @@ class Roles(CommonEqualityMixin):
     # deprecated, since this only returns "Role" and now we can have both "Role" and "PluginRole"
     def __getitem__(self, index):
         if not isinstance(index, int):
-            raise Exception(
-                f"Roles index must be an integer, got {type(index)}"
-            )
+            raise Exception(f"Roles index must be an integer, got {type(index)}")
         return self.role[index]
 
     def __len__(self):
@@ -161,9 +159,7 @@ class AuthConfigs(CommonEqualityMixin):
 
     def __getitem__(self, index):
         if not isinstance(index, int):
-            raise Exception(
-                f"AuthConfig index must be an integer, got {type(index)}"
-            )
+            raise Exception(f"AuthConfig index must be an integer, got {type(index)}")
         return self.auth_config[index]
 
     def __len__(self):

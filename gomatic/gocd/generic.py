@@ -10,10 +10,10 @@ class ResourceMixin:
     def resources(self):
         guarded_element = PossiblyMissingElement(self.element)
         return {
-                e.text
-                for e in guarded_element.possibly_missing_child("resources").findall(
-                    "resource"
-                )
+            e.text
+            for e in guarded_element.possibly_missing_child("resources").findall(
+                "resource"
+            )
         }
 
     def ensure_resource(self, resource):
