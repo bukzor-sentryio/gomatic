@@ -1,20 +1,20 @@
 language: python
 python:
-  - '2.7'
-  - '3.5'
+    - '2.7'
+    - '3.5'
 
 install:
-  - pip install tox-travis
-  - pip install -r requirements.txt
+    - pip install tox-travis
+    - pip install -r requirements.txt
 
 script:
-  - tox
+    - tox
 
 deploy:
-  provider: pypi
-  user: MFAnderson
-  on:
-    tags: true
-    repo: gocd-contrib/gomatic
-  password:
-    secure: "qZrZWdJ4nLFiMdZuA0MJrmF4tRz2jxKjIhPj/TmoCuUtJWHeRG1355ZhUdZDTRCLiyRdBjZZ9svlkJ6HBvsmE7KI/aSEtt2gFvgbhW4Em17j6VTyTq8LyCfxMARKR6+wKbt0Qq2TKYz1kymmWc6QmJDWMMTnBY55Jb6PyBRoujs="
+    provider: pypi
+    user: MFAnderson
+    on:
+        tags: true
+        repo: gocd-contrib/gomatic
+    password:
+        secure: qZrZWdJ4nLFiMdZuA0MJrmF4tRz2jxKjIhPj/TmoCuUtJWHeRG1355ZhUdZDTRCLiyRdBjZZ9svlkJ6HBvsmE7KI/aSEtt2gFvgbhW4Em17j6VTyTq8LyCfxMARKR6+wKbt0Qq2TKYz1kymmWc6QmJDWMMTnBY55Jb6PyBRoujs=
